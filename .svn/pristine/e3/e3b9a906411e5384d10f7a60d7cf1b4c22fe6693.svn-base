@@ -1,0 +1,86 @@
+package com.risenb.manage.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.risenb.manage.bean.Manager;
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Role;
+import com.risenb.manage.dao.ManagerMapper;
+import com.risenb.util.DateUtil;
+
+@Service("managerService")
+public class ManagerServiceImpl implements ManagerService {
+
+	@Autowired
+	ManagerMapper managerMapper;
+
+	@Override
+	public Manager createManager(Manager manager) {
+		int row = 0;
+		row = managerMapper.createManager(manager);
+		if (row > 0) {
+			return manager;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public int modifyManagerById(Manager manager) {
+		return managerMapper.modifyManagerById(manager);
+	}
+
+	@Override
+	public Page<Manager> queryManagerList(Page<Manager> page) {
+		List<Manager> list = managerMapper.queryManagerListPage(page);
+		for (Manager manager : list) {
+			manager.setOperaTimeStr(DateUtil.format(manager.getOperaTime()));
+			manager.setCreateTimeStr(DateUtil.format(manager.getCreateTime()));
+		}
+		page.setResults(list);
+		return page;
+	}
+
+	@Override
+	public Manager queryManager(Manager manager) {
+		Manager m = managerMapper.queryManager(manager);
+		return m;
+	}
+
+	@Override
+	public int removeManagerByIds(List<String> ids) {
+		return managerMapper.removeManagerByIds(ids);
+	}
+
+	@Override
+	public Manager queryManagerById(Integer id) {
+		return managerMapper.queryManagerById(id);
+	}
+
+	@Override
+	public List<Role> queryRoleList() {
+		return managerMapper.queryRoleList();
+	}
+
+	@Override
+	public int assignRole(Map<String, Object> map) {
+		int row = 0;
+		row = managerMapper.delRoleByManageId(map);
+		@SuppressWarnings("unchecked")
+		List<Integer> list = (List<Integer>) map.get("ids");
+		if (list.size() > 0) {
+			row = managerMapper.assignRole(map);
+		}
+		return row;
+	}
+
+	@Override
+	public List<Role> queryExistingRoleByMid(Integer mid) {
+		return managerMapper.queryExistingRoleByMid(mid);
+	}
+
+}

@@ -1,0 +1,181 @@
+$.extend($.validator.messages, {
+	required : "必填字段",
+	remote : "请修正此字段",
+	email : "请输入有效的电子邮件地址",
+	url : "请输入有效的网址",
+	date : "请输入有效的日期",
+	dateISO : "请输入有效的日期 (YYYY-MM-DD)",
+	number : "请输入有效的数字",
+	digits : "只能输入数字",
+	creditcard : "请输入有效的信用卡号码",
+	equalTo : "两次输入不同",
+	extension : "请输入有效的后缀",
+	maxlength : $.validator.format("最多可以输入 {0} 个字符"),
+	minlength : $.validator.format("最少要输入 {0} 个字符"),
+	rangelength : $.validator.format("请输入长度在 {0} 到 {1} 之间的字符串"),
+	range : $.validator.format("请输入范围在 {0} 到 {1} 之间的数值"),
+	max : $.validator.format("请输入不大于 {0} 的数值"),
+	min : $.validator.format("请输入不小于 {0} 的数值")
+});
+
+//中文字两个字节
+$.validator.addMethod("byteRangeLength", function(value, element, param) {
+    var length = value.length;
+    for(var i = 0; i < value.length; i++){
+        if(value.charCodeAt(i) > 127){
+            length++;
+        }
+    }
+  return this.optional(element) || ( length >= param[0] && length <= param[1] );   
+}, $.validator.format("请确保输入的值在{0}-{1}个字节之间(一个中文字算2个字节)"));
+
+
+// 邮政编码验证   
+$.validator.addMethod("isZipCode", function(value, element) {   
+    var tel = /^[0-9]{6}$/;
+    return this.optional(element) || (tel.test(value));
+}, "请正确填写您的邮政编码");
+
+//手机号
+$.validator.addMethod("mobile", function(value, element) {   
+    var tel = /(17\d{9}|13\d{9}|15\d{9}|18\d{9})/;
+    return this.optional(element) || (tel.test(value));
+}, "请正确的手机号码");
+
+
+$.metadata.setType('attr','validate') ;//这句就是告诉validate，写在HTML标签中的那个属性是验证规则
+
+$.validator.setDefaults({
+    errorClass:'form-error',//错误标签的class类，用于自定义样式
+    onfocusout:function(element){
+       $(element).valid();
+    },
+    errorPlacement:function(error,element){//自定义错误提示位置，超级有用,看下图3
+        var position = element.attr("position") ;
+        if(position){
+            error.css({"left":position.split(",")[0]+"px","top":position.split(",")[1]+"px"}) ;
+        }
+        element.parent().css({"position":"relative"}).append(error); 
+    }  
+}); 
+
+$(function() {
+	$("a").each(function() {
+		var tar = $(this);
+		var openType = tar.attr("open-type");
+		if (openType == "open") {// 弹出框
+			tar.bind('click', function() {
+				var title = tar.html();
+				var url = tar.attr("data-url");
+				var width = tar.attr("data-width");
+				if (typeof (width) == "undefined") {
+					var width = "60%";
+				}
+				var height = tar.attr("data-height");
+				if (typeof (height) == "undefined") {
+					height = "50%";
+				}
+				parent.layer.open({
+					type : 2,
+					title : title,
+					shadeClose : true,
+					shade : shade,
+					area : [ width, height ],
+					content : url,
+				});
+			});
+		} else if (openType == "confirm") {// 确认框
+			tar.bind('click', function() {
+				var url = tar.attr("data-url");
+				var conMsg = tar.attr("data-msg");
+				if (typeof (conMsg) == "undefined") {
+					conMsg = "确认操作？";
+				}
+				parent.layer.confirm(conMsg, {
+					btn : [ '确定', '取消' ],
+					shade : false
+				}, function() {
+					$.post(url, function(map) {
+						var flag = map.status;
+						var msgAl = map.msg;
+						if (flag == 1) {
+							window.top.freshFrame();
+							showSuccess(msgAl);
+						} else {
+							showFailMsg(msgAl);
+						}
+					}, "json");
+				});
+			})
+		} else if (openType == "doajax") {// ajax执行
+			tar.bind('click', function() {
+				var url = tar.attr("data-url");
+				$.post(url, function(map) {
+					var flag = map.status;
+					var msgAl = map.msg;
+					if (flag == 1) {
+						window.top.freshFrame();
+						showSuccess(msgAl);
+					} else {
+						showFailMsg(msgAl);
+					}
+				}, "json");
+			})
+		}
+	})
+	$("form").each(function() {
+		var tarForm = $(this);
+		var openType = tarForm.attr("open-type");
+		if (openType == "doajax") {
+			tarForm.validate({
+				onfocusout : function(element) {
+					$(element).valid();
+				},
+				submitHandler : function(form) {
+					var url = tarForm.attr("action");
+					$.ajax({
+						url : url,
+						type : "post",
+						data : tarForm.serialize(),
+						dataType : "json",
+						success : function(state) {
+							var status= state.status;
+							var almsg=state.msg;
+							if (status == 1) {
+								showSuccess(almsg);
+								window.top.freshFrame();
+								closeWindow();
+							} else {
+								showFailMsg(almsg);
+							}
+						}
+					});
+				}
+			});
+		}
+	})
+	//webupload 上传
+	$("input[webupload='webupload']").each(
+			function() {
+				var temp = $(this);
+				//随机生成id
+				var id = guid();
+				temp.attr("id", id);
+				temp.prev("div").find("div").first().attr("id", id + 'BtnId');
+				temp.prev("div").prev("div").attr("id", id + 'PreId');
+				var load = new $WebUpload(id);
+				load.init();
+				var defaultImg = $("#" + id).val();
+				if (defaultImg != '') {
+					$("<i class='fa fa-times' data-id='"+id+"' onclick='deleteImg(this);' style=' color:red; position:absolute; right:-1px; top:-3px; z-index:200; font-size: 22px; '></i><img  height='100px' width='100px' src='"+defaultImg+"'></img>").appendTo($("#" + id + 'PreId'));
+					
+				}
+			})
+})
+function guid() {
+	function S4() {
+		return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+	}
+	return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4()
+			+ S4() + S4());
+}

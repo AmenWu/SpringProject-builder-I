@@ -1,0 +1,41 @@
+package com.risenb.aop;
+
+import java.lang.reflect.Method;
+import java.util.Date;
+
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.apache.commons.lang3.time.StopWatch;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.risenb.manage.service.SysRunLogService;
+
+public class MethodConsumeAdvice implements MethodInterceptor{
+	@Autowired
+	SysRunLogService sysRunLogService;
+	@Override
+	public Object invoke(MethodInvocation invocation) throws Throwable {
+		StopWatch clock = new StopWatch();
+		clock.start();
+		Date start = new Date();
+		//返回结果
+		Object result = invocation.proceed();
+		Date end = new Date();
+		clock.stop();
+		//方法名
+		LogerAnnotation annotation = invocation.getMethod().getAnnotation(LogerAnnotation.class);
+		if (null == annotation || annotation.isLog()) {
+			//获取完成方法名
+			Method method = invocation.getMethod();
+			String className = method.getDeclaringClass().getName();
+			String methodName = method.getName();
+			methodName = className+"."+ methodName;
+			// 请求参数
+			Object[] arguments = invocation.getArguments();
+			// 执行时间 单位毫秒
+			long time = clock.getTime();
+			sysRunLogService.createSysRunLog(methodName, start, end, time, arguments, result);
+		}
+		return result;
+	}
+}

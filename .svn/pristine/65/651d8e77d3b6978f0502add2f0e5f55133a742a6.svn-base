@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.risenb.dao.LoginLogMapper" >
+  <sql id="Base_Column_List" >
+    id, userid, createtime, ip, status, operator, operatime
+  </sql>
+  
+  <select id="queryLoginLogById" resultType="com.risenb.bean.LoginLog" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from loginlog
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="removeLoginLogById" parameterType="java.lang.Integer" >
+    delete from loginlog where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="createLoginLog" parameterType="com.risenb.bean.LoginLog" useGeneratedKeys="true" keyProperty="id">
+    insert into loginlog
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="ip != null" >
+        ip,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="operator != null" >
+        operator,
+      </if>
+      <if test="operatime != null" >
+        operatime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ip != null" >
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=INTEGER},
+      </if>
+      <if test="operatime != null" >
+        #{operatime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="modifyLoginLogById" parameterType="com.risenb.bean.LoginLog" >
+    update loginlog
+    <set >
+      <if test="userid != null" >
+        userid = #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ip != null" >
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="operator != null" >
+        operator = #{operator,jdbcType=INTEGER},
+      </if>
+      <if test="operatime != null" >
+        operatime = #{operatime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

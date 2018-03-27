@@ -1,0 +1,15 @@
+package com.risenb.manage.dao;
+
+import org.springframework.stereotype.Repository;
+
+import com.risenb.manage.bean.SysRunLog;
+
+@Repository
+public interface SysRunLogMapper {
+	/**
+	 * 新增系统日志
+	 * @param sysLogs
+	 * @return
+	 */
+	 int createSysRunLog(SysRunLog sysRunLog);
+}

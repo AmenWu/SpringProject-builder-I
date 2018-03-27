@@ -1,0 +1,8 @@
+.tb_cnt_center{ text-align: center;}
+thead tr th{text-align:center;}
+td{
+	font-size: 13px
+}
+.form-error{
+	color: red
+}

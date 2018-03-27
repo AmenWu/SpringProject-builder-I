@@ -1,0 +1,26 @@
+package com.risenb.manage.dao;
+
+import java.util.List;
+import org.springframework.stereotype.Repository;
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Permission;
+
+@Repository
+public interface PermissionMapper {
+
+	//查询权限信息
+	List<Permission> queryPermissionPage(Page<Permission> page);
+	
+	//添加
+	int insert(Permission permission);
+	
+	//编辑
+	int update(Permission permission);
+	
+	//删除
+	int delete(Permission permission);
+	
+	//根据管理员ID查询去权限列表
+	List<Permission> queryPermissionByManId(Integer manageId);
+	
+}

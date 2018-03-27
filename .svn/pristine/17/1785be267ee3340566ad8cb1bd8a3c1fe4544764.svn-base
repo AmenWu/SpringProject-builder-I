@@ -1,0 +1,76 @@
+<%@ page language="java"  pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<%@ include file="../common/head.jsp" %>
+
+<body class="gray-bg">
+      <div class="wrapper wrapper-content animated">
+            <div class="col-sm-6" style="width: 800px;" >
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content">
+                        <form class="form-horizontal m-t" id="signupForm" >
+                            <div class="pageFormContent" data-layout-h="0">
+					            <hr>
+					            <input type="hidden" name="mid" value="${mid}"/>
+					            <div class="form-group" style="margin: 20px 0 20px; ">
+					                <label style="width:100px; text-align: right;">新密码：</label>
+					                <input style="display: inline;width: 620px;"  class="form-control"  name="newpwd"  type="password"  placeholder="新密码" >
+					            </div>
+					            <div class="form-group" style="margin-left: 0px;" >
+					                <label style="width:100px; text-align: right;" >确认密码：</label>
+					                <input style="display: inline;width: 620px;" class="form-control" name="re_password" type="password" placeholder="确认密码"  >
+					            </div>
+							</div>
+                            <div class="form-group">
+				                <div class="col-sm-8 col-sm-offset-3">
+				                   <button class="btn btn-primary" type="submit" onclick="save()" >保存</button>
+				                   <button class="btn" type="button" onclick="back()" style="margin-left: 110px;" >返回</button>
+				                </div>
+				           </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<script type="text/javascript">
+
+$().ready(function () {
+    $("#signupForm").validate({
+        rules: {
+        	newpwd: "required",
+        	re_password:{
+        		 required: true,
+                 equalTo: "[name='newpwd']"
+        	}
+        },
+        messages: {
+        	newpwd: icon + "密码不能为空",
+        	re_password: {
+        		required: icon + "确认密码不能为空",
+                equalTo: icon + "两次密码输入不一致"
+        	}
+        },
+        submitHandler: function(){
+        	$.ajax({
+    			url:"<%=basePath%>manage/modifyPwd.im",
+    			type:"post",
+    			data:$("#signupForm").serialize(),
+    			dataType:"json",
+    			success:function(result){
+    				if(result == 1){
+    					window.top.freshFrame();
+    					closeWindow();
+    				}else{
+    					showMsg("修改失败！");
+    				}
+    			}
+    		});     	
+        }
+    });
+});
+
+</script>
+ 
+</body>
+</html>

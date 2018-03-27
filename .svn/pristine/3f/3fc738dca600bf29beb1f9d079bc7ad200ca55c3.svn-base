@@ -1,0 +1,14 @@
+package com.risenb.manage.service;
+
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Permission;
+
+public interface PermissionService {
+
+	/**
+	 * @param permission
+	 * @return
+	 */
+	Page<Permission> queryPermissionList(Page<Permission> page);
+
+}

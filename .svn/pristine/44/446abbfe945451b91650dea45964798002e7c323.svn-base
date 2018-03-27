@@ -1,0 +1,174 @@
+package com.risenb.controller.manage;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.risenb.base.BaseControllor;
+import com.risenb.bean.Result;
+import com.risenb.constant.Constant;
+import com.risenb.manage.bean.Manager;
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Permission;
+import com.risenb.manage.bean.Role;
+import com.risenb.manage.service.PermissionService;
+import com.risenb.manage.service.RoleService;
+import com.risenb.util.JsonUtils;
+import com.risenb.util.StringUtil;
+
+/**
+ * <p>
+ * Title:角色控制类
+ * </p>
+ * <p>
+ * Description:
+ * </p>
+ * 
+ * @version 1.0
+ */
+@Controller
+@RequestMapping("role")
+public class RoleController extends BaseControllor {
+
+	@Resource
+	RoleService roleService;
+
+	@Resource
+	PermissionService permissionService;
+
+	/**
+	 * 角色列表
+	 * 
+	 * @param role
+	 * @return
+	 */
+	@RequestMapping("list")
+	public ModelAndView roleListByPage(@RequestParam Map<String, Object> params, Integer pageSize,
+			Integer pageCurrent) {
+		ModelAndView mv = new ModelAndView("manage/role_manage");
+		Page<Role> page = new Page<Role>().setPageNo(pageCurrent == null ? 1 : pageCurrent)
+				.setPageSize(pageSize == null ? 15 : pageSize).setParams(params);
+		page = roleService.roleListByPage(page);
+		mv.addObject("page", page);
+		request().setAttribute("params", params);
+		return mv;
+	}
+
+	/**
+	 * 跳转到角色编辑页面
+	 * 
+	 * @param rid
+	 * @return
+	 */
+	@RequestMapping(value = "toSavePage")
+	public ModelAndView toSaveRole(Integer rid) {
+		ModelAndView mv = new ModelAndView("manage/role_save");
+		if (rid != null) {
+			Role role = roleService.queryRoleById(rid);
+			mv.addObject("role", role);
+			List<Permission> permissionList = role.getPermissionList();
+			String psid = "";
+			String psname = "";
+			for (int i = 0; i < permissionList.size(); i++) {
+				if (permissionList.get(i).getPermission() != null) {
+					psid += permissionList.get(i).getPermission().getPermissionId() + ",";
+					psname += permissionList.get(i).getPermission().getTitle() + ",";
+				}
+			}
+			if (psid.length() > 0) {
+				psid = psid.substring(0, psid.length() - 1);
+				psname = psname.substring(0, psname.length() - 1);
+			}
+			mv.addObject("psid", psid);
+			mv.addObject("psname", psname);
+		}
+		Permission permission = new Permission();
+		List<Permission> permissionList = permissionService.queryPermissionList(permission);
+		mv.addObject("ps", permissionList);  
+		String json = JsonUtils.objectToJson(permissionList);
+		mv.addObject("ztreeJson",json);
+		return mv;
+	}
+
+	/**
+	 * 编辑角色
+	 * 
+	 * @param role
+	 * @param pids
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "save")
+	public void saveRole(@RequestBody @ModelAttribute Role role, String pids) throws IOException {
+		Manager manager = (Manager) session().getAttribute(Constant.SESSION_MANAGER);
+		int row = 0;
+		Integer roleId = role.getRoleId();
+		role.setOperator(manager.getManageId());
+		role.setOperaTime(new Date());
+		if (null != roleId) {
+			row = roleService.modifyRoleById(role);
+		} else {
+			role = roleService.createRole(role);
+			if (null != role) {
+				row = 1;
+			} else {
+				row = 0;
+			}
+		}
+		if (row > 0) {
+			permissionService.removePermissionRoleByRoleId(roleId);
+			int num = Integer.MAX_VALUE;
+			if (StringUtil.isNotEmpty(pids)) {
+				List<String> pidList = new ArrayList<String>();
+				pidList = Arrays.asList(pids.split(","));
+				if (pidList.size() > 0) {
+					num = permissionService.batchCreatePermissionRole(manager.getManageId(), roleId, pidList);
+				}
+			}
+			if (num > 0) {
+				returnJson(Result.success("操作成功"));
+			} else {
+				returnJson(new Result("0", "操作失败"));
+			}
+		} else {
+			returnJson(new Result("0", "操作失败"));
+		}
+	}
+
+	/**
+	 * 删除角色
+	 * 
+	 * @param ids
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "del")
+	public void deleteRole(String ids, String rid) throws IOException {
+		int row = 0;
+		List<String> list = new ArrayList<String>();
+		if (!StringUtils.isBlank(rid)) {
+			list.add(rid);
+			row = roleService.removeRoleByIds(list);
+		} else if (!StringUtils.isBlank(ids)) {
+			list = Arrays.asList(ids.split(","));
+			row = roleService.removeRoleByIds(list);
+		}
+		if (row > 0) {
+			returnJson(Result.success("删除成功"));
+		} else {
+			returnJson(new Result("0", "删除失败"));
+		}
+	}
+
+}

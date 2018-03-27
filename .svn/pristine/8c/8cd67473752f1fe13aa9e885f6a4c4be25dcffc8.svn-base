@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.risenb.manage.dao.ManagerMapper" >
+
+	<sql id="Base_Column_List" >
+	    manage_id, username, password, name, head_img, status, create_time,operator,opera_time,phone,id_key
+	</sql>
+  
+	<select id="queryManagerById" resultType="com.risenb.manage.bean.Manager" parameterType="java.lang.Integer" >
+	    select 
+	    <include refid="Base_Column_List" />
+	    from sys_manager
+	    where manage_id = #{manageId,jdbcType=INTEGER}
+	</select>
+  
+	<select id="queryManagerListPage" resultType="com.risenb.manage.bean.Manager" parameterType="com.risenb.manage.bean.Page">
+	  	select 
+	  	<include refid="Base_Column_List" />
+	    from sys_manager
+	    <where>
+	    	<if test=" params.userName!=null">
+	    		name like CONCAT('%','${params.userName}','%' ) or username like CONCAT('%','${params.userName}','%' )
+	    	</if>
+	    </where>
+	    order by create_time desc
+	</select>
+	  
+	<select id="queryManager" resultType="com.risenb.manage.bean.Manager" parameterType="com.risenb.manage.bean.Manager">
+	 	select 
+	 	<include refid="Base_Column_List" /> 
+	 	from sys_manager 
+	 	where 1=1
+		<if test="userName != null" >
+			and username = #{userName,jdbcType=VARCHAR}
+		</if>
+		<if test="name != null" >
+			and name = #{name}
+		</if>
+		<if test="status != null" >
+			and status = #{status}
+		</if>
+		limit 0,1
+	</select>
+	  
+	 <delete id="removeManagerByIds" parameterType="java.util.List">
+	  	delete from sys_manager where manage_id in
+	  	<foreach collection="list" open="(" separator="," close=")" item="manageId">
+	  		#{manageId}
+	  	</foreach>
+	 </delete>
+  
+	 <insert id="createManager" parameterType="com.risenb.manage.bean.Manager" keyProperty="manageId" useGeneratedKeys="true">
+	  	   insert into sys_manager
+		   <trim prefix="(" suffix=")" suffixOverrides="," >
+		     <if test="userName != null" >
+		       username,
+		     </if>
+		     <if test="password != null" >
+		       password,
+		     </if>
+		     <if test="name != null" >
+		       name,
+		     </if>
+		     <if test="headImg != null" >
+		       head_img,
+		     </if>
+		     <if test="status != null" >
+		       status,
+		     </if>
+		     <if test="createTime != null" >
+		       create_time,
+		     </if>
+		     <if test="operator!=null">
+		     	operator,
+		     </if>
+		     <if test="operaTime!=null">
+		     	opera_time,
+		     </if>
+		     <if test="phone!=null">
+		     	phone,
+		     </if>
+		     <if test="idKey!=null">
+		     	id_key,
+		     </if>
+		   </trim>
+		   <trim prefix="values (" suffix=")" suffixOverrides="," >
+		     <if test="userName != null" >
+		       #{userName,jdbcType=VARCHAR},
+		     </if>
+		     <if test="password != null" >
+		       #{password,jdbcType=VARCHAR},
+		     </if>
+		     <if test="name != null" >
+		       #{name,jdbcType=VARCHAR},
+		     </if>
+		     <if test="headImg != null" >
+		       #{headImg,jdbcType=VARCHAR},
+		     </if>
+		     <if test="status != null" >
+		       #{status,jdbcType=VARCHAR},
+		     </if>
+		     <if test="createTime != null" >
+		       #{createTime,jdbcType=TIMESTAMP},
+		     </if>
+		     <if test="operator!=null">
+		     	#{operator,jdbcType=INTEGER},
+		     </if>
+		     <if test="operaTime!=null">
+		     	#{operaTime,jdbcType=TIMESTAMP},
+		     </if>
+		     <if test="phone!=null">
+		     	#{phone,jdbcType=VARCHAR},
+		     </if>
+		     <if test="idKey!=null">
+		     	#{idKey,jdbcType=VARCHAR},
+		     </if>
+		   </trim>
+	 </insert>
+  
+	 <update id="modifyManagerById" parameterType="com.risenb.manage.bean.Manager" >
+	    update sys_manager
+	    <set >
+	      <if test="userName != null" >
+	        username = #{userName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="password != null" >
+	        password = #{password,jdbcType=VARCHAR},
+	      </if>
+	      <if test="name != null" >
+	        name = #{name,jdbcType=VARCHAR},
+	      </if>
+	      <if test="headImg != null" >
+	        head_img = #{headImg,jdbcType=VARCHAR},
+	      </if>
+	      <if test="status != null" >
+	        status = #{status,jdbcType=VARCHAR},
+	      </if>
+	      <if test="createTime != null" >
+	        create_time = #{createTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="operator!=null">
+	      	operator = #{operator,jdbcType=INTEGER},
+	      </if>
+	      <if test="operaTime!=null">
+	      	opera_time = #{operaTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="phone!=null">
+	      	phone = #{phone,jdbcType=VARCHAR},
+	      </if>
+	      <if test="idKey!=null">
+	      	id_key = #{idKey,jdbcType=VARCHAR},
+	      </if>
+	    </set>
+	    where manage_id = #{manageId,jdbcType=INTEGER}
+	</update>
+	
+	<select id="queryRoleList" resultType="com.risenb.manage.bean.Role" >
+		select * from sys_role
+	</select>
+	
+	<insert id="assignRole" parameterType="map" >
+		insert into sys_manager_role_rel(manage_id,role_id,operator,opera_time) values
+		<foreach collection="roleIdList" item="roleId"  separator="," >
+			(#{manageId},#{roleId},#{operator},#{operaTime})
+		</foreach>
+	</insert>
+	
+	<delete id="delRoleByManageId" parameterType="map" >
+		delete from sys_manager_role_rel where manage_id = #{manageId}
+	</delete>
+	
+	<select id="queryExistingRoleByMid" parameterType="int" resultType="com.risenb.manage.bean.Role" >
+		select distinct(role_id) from sys_manager_role_rel where manage_id = #{manageId}
+	</select>
+	
+</mapper>

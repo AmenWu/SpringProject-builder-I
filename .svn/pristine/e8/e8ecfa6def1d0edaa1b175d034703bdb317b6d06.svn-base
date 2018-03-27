@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.risenb.manage.dao.PermissionRoleMapper" >
+
+	<sql id="Base_Column_List" >
+	  	rel_id, role_id, permission_id, operator, opera_time
+	</sql>
+	
+ 
+     <!-- 查询权限角色列表 -->
+	<select id="queryPermissionRoleList" parameterType="com.risenb.manage.bean.PermissionRole" resultType="com.risenb.manage.bean.PermissionRole">
+		select 
+		  sprr.rel_id, sprr.role_id, sprr.permission_id, sprr.operator, sprr.opera_time, sp.title
+		from 
+			sys_permission_role_rel sprr
+		left join 
+		    sys_permission sp
+		on 
+		    sp.permission_id = sprr.permission_id
+		where
+			sp.permission_id > 0
+		  <if test= "roleId != null">
+		      and sprr.role_id = #{roleId,jdbcType=INTEGER}
+		  </if>
+		  <if test= "permissionId != null">
+		      and sprr.permission_id = #{permissionId,jdbcType=INTEGER}
+		  </if>
+	</select>
+
+    <!-- 删除 -->
+	<delete id="delete" parameterType="com.risenb.manage.bean.PermissionRole">
+		delete from sys_permission_role_rel 
+		<where>
+			<if test="roleId != null" >
+			      role_id = #{roleId}
+			</if>
+			<if test="permissionId != null" >
+			      permission_id = #{permissionId}
+			</if>
+	    </where>
+	</delete>
+    <!-- 添加 --> 
+	<insert id="insert"  keyProperty="relId" useGeneratedKeys="true" parameterType="com.risenb.manage.bean.PermissionRole" >
+		  insert into sys_permission_role_rel
+		  <trim prefix="(" suffix=")" suffixOverrides="," >
+		    <if test="roleId != null" >
+		      role_id,
+		    </if>
+		    <if test="permissionId != null" >
+		      permission_id,
+		    </if>
+		    <if test="operator != null" >
+		      operator,
+		    </if>
+		    <if test="operaTime != null" >
+		      opera_time,
+		    </if>
+		  </trim>
+		  <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="roleId != null" >
+		      #{roleId,jdbcType=INTEGER},
+		    </if>
+		    <if test="permissionId != null" >
+		      #{permissionId,jdbcType=INTEGER},
+		    </if>
+		    <if test="operator != null" >
+		      #{operator,jdbcType=INTEGER},
+		    </if>
+		    <if test="operaTime != null" >
+		      #{operaTime,jdbcType=TIMESTAMP},
+		    </if>
+		  </trim>
+	</insert>
+    <!-- 编辑 -->
+	<update id="update" parameterType="com.risenb.manage.bean.PermissionRole" >
+		  update sys_permission_role_rel
+		  <set >
+		    <if test="roleId != null" >
+		      role_id = #{roleId,jdbcType=INTEGER},
+		    </if>
+		    <if test="permissionId != null" >
+		      permission_id = #{permissionId,jdbcType=INTEGER},
+		    </if>
+		    <if test="operator != null" >
+		      operator = #{operator,jdbcType=INTEGER},
+		    </if>
+		    <if test="operaTime != null" >
+		      opera_time = #{operaTime,jdbcType=TIMESTAMP},
+		    </if>
+		  </set>
+		  where rel_id = #{relId,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 批量插入 -->
+	<insert id="batchCreatePermissionRole">
+		  insert into 
+		  		sys_permission_role_rel (role_id,permission_id,operator,opera_time) 
+		  values 
+				<foreach collection="pidList" item="pid" index="index" separator="," > 
+					(#{roleId},#{pid},#{manageId},now()) 
+				</foreach>
+	</insert>
+	
+</mapper>

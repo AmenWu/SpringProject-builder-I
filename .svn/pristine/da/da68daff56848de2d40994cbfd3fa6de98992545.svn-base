@@ -1,0 +1,29 @@
+package com.risenb.manage.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.risenb.manage.bean.Manager;
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Role;
+
+public interface ManagerService {
+	
+	int createManager(Manager record);   
+	
+	int modifyManagerById(Manager record); 
+	
+	Manager queryManager(Manager manager);  
+	
+	int removeManagerByIds(List<String> ids); 
+	
+	Manager queryManagerById(Integer id); 
+
+	Page<Manager>  queryManagerList(Page<Manager> page);
+
+	int assignRole(Map<String, Object> map);
+
+	List<Role> queryExistingRoleByMid(Integer mid);
+
+	List<Role> queryRoleList();
+}

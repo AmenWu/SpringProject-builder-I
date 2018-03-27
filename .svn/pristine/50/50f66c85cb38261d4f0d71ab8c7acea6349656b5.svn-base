@@ -1,0 +1,38 @@
+package com.risenb.manage.dao;
+
+import java.util.List;
+import org.springframework.stereotype.Repository;
+import com.risenb.manage.bean.Permission;
+
+@Repository
+public interface PermissionMapper {
+	
+    int removePermissionById(Integer id);
+
+    int createPermission(Permission record);
+
+    Permission queryPermissionById(Integer id);
+
+    int modifyPermissionById(Permission record);
+
+    List<Permission> queryPermissionByParentId(Integer parentid);
+    
+    List<Permission> queryByManId(Integer manId);
+    
+    int removePermissionRoleById(Integer id);
+
+    int createPermissionRole(Permission permission);
+
+    Permission queryPermissionRoleById(Integer id);
+
+    int modifyPermissionRoleById(Permission permission);
+
+    public int removePermissionRoleByRoleId(Integer roleid);
+
+	List<Permission> queryPermissionList();
+	
+	List<Permission> queryPermissionListHav();
+
+	List<Permission> queryPermissionByRid(Integer roleId);
+    
+}

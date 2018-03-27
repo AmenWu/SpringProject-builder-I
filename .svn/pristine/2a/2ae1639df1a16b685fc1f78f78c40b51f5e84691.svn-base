@@ -1,0 +1,192 @@
+package com.risenb.controller.manage;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.risenb.base.BaseControllor;
+import com.risenb.cache.CacheFactory;
+import com.risenb.constant.Constant;
+import com.risenb.manage.bean.Manager;
+import com.risenb.manage.bean.Permission;
+import com.risenb.manage.service.ManagerService;
+import com.risenb.manage.service.PermissionService;
+import com.risenb.util.EncryptUtil;
+
+/**
+ * <p>
+ * Title:登录控制类
+ * </p>
+ * <p>
+ * Description:
+ * </p>
+ * 
+ * @version 1.0
+ */
+@Controller
+@RequestMapping(value = "/login")
+public class LoginController extends BaseControllor {
+
+	@Resource
+	ManagerService managerService;
+
+	@Resource
+	PermissionService permissionService;
+
+	/**
+	 * 跳转到登录页面
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "toLogin")
+	public String tologin() {
+		return "login";
+	}
+
+	/**
+	 * 退出登录
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "logout")
+	public String logout() {
+		session().removeAttribute(Constant.SESSION_MANAGER);
+		return "login";
+	}
+
+	/**
+	 * 登录
+	 * 
+	 * @param manager
+	 * @param checkcode
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/login")
+	public ModelAndView login(@RequestBody @ModelAttribute Manager manager,
+			@Param(value = "checkcode") String checkcode, HttpServletResponse response) throws IOException {
+		ModelAndView model = new ModelAndView();
+		Manager sessionManager = (Manager) session().getAttribute(Constant.SESSION_MANAGER);
+		if (null != sessionManager) {// 用户已经登录 跳转到首页
+			response.sendRedirect("index.im");
+			return null;
+		}
+		Manager m = managerService.queryManager(manager);
+		String code = session().getAttribute("checkcode").toString();
+		if (null == checkcode) {
+			model.addObject("error", "验证码不能为空");
+		} else if (!checkcode.equalsIgnoreCase(code)) {
+			model.addObject("error", "验证码不正确");
+		} else if (m == null) {
+			model.addObject("error", "用户名不存在");
+		} else if (!EncryptUtil.check(m.getPassword(), manager.getPassword())) {
+			model.addObject("error", "用户名或密码错误！");
+		} else if ("1".equalsIgnoreCase(m.getStatus())) {
+			model.addObject("error", "用户名被冻结,请联系管理员");
+		} else {
+			HttpSession httpSession = CacheFactory.LOGIN_STATUS_CACHE.get(manager.getUsername());
+			if (null != httpSession) {
+				try {
+					httpSession.removeAttribute(Constant.SESSION_MANAGER);
+				} catch (Exception e) {
+				}
+			}
+			CacheFactory.LOGIN_STATUS_CACHE.remove(manager.getUsername());
+			session().setAttribute(Constant.SESSION_MANAGER, m);
+			CacheFactory.LOGIN_STATUS_CACHE.put(manager.getUsername(), session());
+			model.setViewName("redirect:/login/index.im");
+			return model;
+		}
+		model.addObject("manager", manager);
+		model.setViewName("login");
+		return model;
+	}
+
+	/**
+	 * 跳转到首页，并展示相应的权限
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "index")
+	public ModelAndView index() {
+		ModelAndView view = new ModelAndView("manage/home_index");
+		Manager manager = (Manager) session().getAttribute(Constant.SESSION_MANAGER);
+		if (manager == null) {
+			view.setViewName("login");
+			return view;
+		}
+		List<Permission> permissionList = permissionService.queryPermissionListById(manager.getId());
+		List<Permission> menusBook = new ArrayList<Permission>(); // 所有左侧菜单信息
+		List<Permission> menus = new ArrayList<Permission>(); // 所有左侧菜单信息
+		for (int i = 0, size = permissionList.size(); i < size; i++) {
+			Permission permission = permissionList.get(i);
+			Integer ismenu = permission.getIsmenu(); // 0为左侧菜单 1为功能菜单
+			if (null != ismenu) {
+				if (0 == ismenu) {
+					menus.add(permission);
+					Integer parentid = permission.getParentid();
+					if (null != parentid && parentid == 0) {
+						menusBook.add(permission);
+					}
+				}
+			}
+		}
+		// 组织权限关系图
+		for (int i = 0, size = menus.size(); i < size; i++) {
+			Permission permission = menus.get(i);
+			Integer id = permission.getId();
+			if (null != id) {
+				for (int j = 0, sizes = menus.size(); j < sizes; j++) {
+					Permission permission2 = menus.get(j);
+					Integer parentid = permission2.getParentid();
+					if (null != parentid && parentid == id) {
+						List<Permission> children = permission.getChildren();
+						if (null == children) {
+							children = new ArrayList<Permission>();
+						}
+						children.add(permission2);
+						permission.setChildren(children);
+					}
+				}
+			}
+		}
+		Map<String, String> permissionMap = new HashMap<String, String>();
+		for (int i = 0, size = permissionList.size(); i < size; i++) {
+			Permission permission = permissionList.get(i);
+			String url = permission.getUrl();
+			if (null != url && !"".equals(url)) {
+				permissionMap.put(url, url);
+			}
+		}
+		// 将权限放入session
+		session().setAttribute("permissionMap", permissionMap);
+		session().setAttribute("menus", menus);
+		session().setAttribute("menusBook", menusBook);
+		session().setAttribute(Constant.SESSION_MANAGER_PERMISSIONLIST, permissionList);
+		return view;
+	}
+
+	/**
+	 * 欢迎页
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "welcome")
+	public ModelAndView getLoginLog() {
+		ModelAndView view = new ModelAndView("welcome");
+		return view;
+	}
+}

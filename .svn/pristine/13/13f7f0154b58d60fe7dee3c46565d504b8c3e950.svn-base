@@ -1,0 +1,31 @@
+package com.risenb.initialize;
+
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
+
+/**
+ * <pre>
+ * <p>Title: Spring容器加载完毕，需要做一些操作。</p>
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2010 - 2016 </p>
+ * <p>Company: Beijing Risenb Technology Co.,Ltd. </p>
+ * <p>Build: 2017年6月20日 上午10:43:17 </p>
+ * </pre>
+ *
+ * @author Chang Yuxin
+ * @version 1.0
+ */
+@Component
+public class InitializeProcessor implements ApplicationListener<ContextRefreshedEvent> {
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		if (event.getApplicationContext().getDisplayName().equals("Root WebApplicationContext")) {
+			// Initialize Permission List
+			new InitializePermission().initPermission();
+
+		}
+	}
+
+}

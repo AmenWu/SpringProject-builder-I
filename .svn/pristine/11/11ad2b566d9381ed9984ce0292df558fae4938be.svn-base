@@ -1,0 +1,16 @@
+package com.risenb.manage.dao;
+
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+import com.risenb.manage.bean.SysOpLog;
+import com.risenb.manage.bean.Page;
+
+@Repository
+public interface SysOpLogMapper {
+	
+    List<SysOpLog> queryLogListPage(Page<SysOpLog> page);
+
+	int createLog(SysOpLog record);
+    
+}

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.risenb.manage.dao.ManagerMapper" >
+
+	<sql id="Base_Column_List" >
+	    id, username, password, name, head_img, status, create_time,operator,opera_time,phone,id_key
+	</sql>
+  
+	<select id="queryManagerById" resultType="com.risenb.manage.bean.Manager" parameterType="java.lang.Integer" >
+	    select 
+	    <include refid="Base_Column_List" />
+	    from sys_manager
+	    where id = #{id,jdbcType=INTEGER}
+	</select>
+  
+	<select id="queryManagerListPage" resultType="com.risenb.manage.bean.Manager" parameterType="com.risenb.manage.bean.Page">
+	  	select 
+	  	<include refid="Base_Column_List" />
+	    from sys_manager
+	    <where>
+	    	<if test=" params.username!=null">
+	    		name like CONCAT('%','${params.username}','%' ) or username like CONCAT('%','${params.username}','%' )
+	    	</if>
+	    </where>
+	</select>
+	  
+	<select id="queryManager" resultType="com.risenb.manage.bean.Manager" parameterType="com.risenb.manage.bean.Manager">
+	 	select 
+	 	<include refid="Base_Column_List" /> 
+	 	from sys_manager 
+	 	where 1=1
+		<if test="username != null" >
+			and username = #{username,jdbcType=VARCHAR}
+		</if>
+		<if test="name != null" >
+			and name = #{name}
+		</if>
+		<if test="status != null" >
+			and status = #{status}
+		</if>
+		limit 0,1
+	</select>
+	  
+	 <delete id="removeManagerByIds" parameterType="java.util.List">
+	  	delete from sys_manager where id in
+	  	<foreach collection="list" open="(" separator="," close=")" item="id">
+	  		#{id}
+	  	</foreach>
+	 </delete>
+  
+	 <insert id="createManager" parameterType="com.risenb.manage.bean.Manager" keyProperty="id" useGeneratedKeys="true">
+	  	   insert into sys_manager
+		   <trim prefix="(" suffix=")" suffixOverrides="," >
+		     <if test="username != null" >
+		       username,
+		     </if>
+		     <if test="password != null" >
+		       password,
+		     </if>
+		     <if test="name != null" >
+		       name,
+		     </if>
+		     <if test="headimg != null" >
+		       head_img,
+		     </if>
+		     <if test="status != null" >
+		       status,
+		     </if>
+		     <if test="createtime != null" >
+		       create_time,
+		     </if>
+		     <if test="operator!=null">
+		     	operator,
+		     </if>
+		     <if test="operatime!=null">
+		     	opera_time,
+		     </if>
+		     <if test="phone!=null">
+		     	phone,
+		     </if>
+		     <if test="idkey!=null">
+		     	id_key,
+		     </if>
+		   </trim>
+		   <trim prefix="values (" suffix=")" suffixOverrides="," >
+		     <if test="username != null" >
+		       #{username,jdbcType=VARCHAR},
+		     </if>
+		     <if test="password != null" >
+		       #{password,jdbcType=VARCHAR},
+		     </if>
+		     <if test="name != null" >
+		       #{name,jdbcType=VARCHAR},
+		     </if>
+		     <if test="headimg != null" >
+		       #{headimg,jdbcType=VARCHAR},
+		     </if>
+		     <if test="status != null" >
+		       #{status,jdbcType=VARCHAR},
+		     </if>
+		     <if test="createtime != null" >
+		       #{createtime,jdbcType=TIMESTAMP},
+		     </if>
+		     <if test="operator!=null">
+		     	#{operator,jdbcType=INTEGER},
+		     </if>
+		     <if test="operatime!=null">
+		     	#{operatime,jdbcType=TIMESTAMP},
+		     </if>
+		     <if test="phone!=null">
+		     	#{phone,jdbcType=VARCHAR},
+		     </if>
+		     <if test="idkey!=null">
+		     	#{idkey,jdbcType=VARCHAR},
+		     </if>
+		   </trim>
+	 </insert>
+  
+	 <update id="modifyManagerById" parameterType="com.risenb.manage.bean.Manager" >
+	    update sys_manager
+	    <set >
+	      <if test="username != null" >
+	        username = #{username,jdbcType=VARCHAR},
+	      </if>
+	      <if test="password != null" >
+	        password = #{password,jdbcType=VARCHAR},
+	      </if>
+	      <if test="name != null" >
+	        name = #{name,jdbcType=VARCHAR},
+	      </if>
+	      <if test="headimg != null" >
+	        head_img = #{headimg,jdbcType=VARCHAR},
+	      </if>
+	      <if test="status != null" >
+	        status = #{status,jdbcType=VARCHAR},
+	      </if>
+	      <if test="createtime != null" >
+	        create_time = #{createtime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="operator!=null">
+	      	operator = #{operator,jdbcType=INTEGER},
+	      </if>
+	      <if test="operatime!=null">
+	      	opera_time = #{operatime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="phone!=null">
+	      	phone = #{phone,jdbcType=VARCHAR},
+	      </if>
+	      <if test="idkey!=null">
+	      	id_key = #{idkey,jdbcType=VARCHAR},
+	      </if>
+	    </set>
+	    where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

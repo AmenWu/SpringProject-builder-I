@@ -1,0 +1,161 @@
+package com.risenb.manage.bean;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class SysLog implements Serializable{
+	
+	private static final long serialVersionUID = -7044611649123194362L;
+	// 日志id
+    private String logId;
+    //目标方法名
+    private String methodName;
+    //操作人id
+    private Integer manageId;
+    //权限id
+    private Integer permissionId;
+    //开始时间
+    private Date startTime;
+    //结束时间
+    private Date endTime;
+    //耗时
+    private Integer consum;
+    //请求参数
+    private String args;
+    //返回结果
+    private String result;
+    //创建时间
+    private Date createTime;
+    
+    private Integer status;
+    
+    //临时字段
+    //操作人姓名
+    private String operator;
+    //操作模块
+    private String operaModule;
+    
+    
+    
+    public SysLog() {
+		super();
+	}
+
+	public SysLog(String methodName, Integer manageId, Integer permissionId, Date startTime, Date endTime,
+			Integer consum, String args, String result) {
+		super();
+		this.methodName = methodName;
+		this.manageId = manageId;
+		this.permissionId = permissionId;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.consum = consum;
+		this.args = args;
+		this.result = result;
+	}
+
+	public String getLogId() {
+        return logId;
+    }
+
+    public void setLogId(String logId) {
+        this.logId = logId;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName == null ? null : methodName.trim();
+    }
+
+    public Integer getManageId() {
+        return manageId;
+    }
+
+    public void setManageId(Integer manageId) {
+        this.manageId = manageId;
+    }
+
+    public Integer getPermissionId() {
+        return permissionId;
+    }
+
+    public void setPermissionId(Integer permissionId) {
+        this.permissionId = permissionId;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public Integer getConsum() {
+        return consum;
+    }
+
+    public void setConsum(Integer consum) {
+        this.consum = consum;
+    }
+    
+    public String getArgs() {
+        return args;
+    }
+
+    public void setArgs(String args) {
+        this.args = args == null ? null : args.trim();
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result == null ? null : result.trim();
+    }
+    
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+	public String getOperator() {
+		return operator;
+	}
+
+	public void setOperator(String operator) {
+		this.operator = operator;
+	}
+
+	public String getOperaModule() {
+		return operaModule;
+	}
+
+	public void setOperaModule(String operaModule) {
+		this.operaModule = operaModule;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+    
+}

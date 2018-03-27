@@ -1,0 +1,10 @@
+mysql.ip=code.4pole.cn
+#mysql database username
+mysql.username=root
+#mysql database password
+mysql.password=123456
+#mysql database name
+mysql.db=base
+
+#dubbo.registry.host=192.168.100.211:2181
+dubbo.registry.host=192.168.0.19

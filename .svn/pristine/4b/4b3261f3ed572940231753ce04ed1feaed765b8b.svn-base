@@ -1,0 +1,59 @@
+package com.risenb.manage.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Permission;
+import com.risenb.manage.dao.PermissionMapper;
+
+@Service(value = "permissionService")
+public class PermissionServiceImpl implements PermissionService {
+	
+	@Autowired
+	PermissionMapper permissionMapper;
+
+	@Override
+	public Page<Permission> queryPermissionPage(Page<Permission> page) {
+		List<Permission> list = permissionMapper.queryPermissionPage(page);
+		page.setResults(list);
+		return page;
+	}
+	
+	//添加
+    public boolean insert(Permission permission){
+    	boolean flag = false;
+    	int num = permissionMapper.insert(permission);
+    	if (num > 0) {
+    		flag = true;
+    	}
+    	return flag;
+    }
+		
+	//编辑
+	public boolean update(Permission permission){
+		boolean flag = false;
+    	int num = permissionMapper.update(permission);
+    	if (num > 0) {
+    		flag = true;
+    	}
+    	return flag;
+	}
+		
+	//删除
+	public boolean delete(Permission permission){
+		boolean flag = false;
+    	int num = permissionMapper.delete(permission);
+    	if (num > 0) {
+    		flag = true;
+    	}
+    	return flag;
+	}
+	
+	public List<Permission> queryPermissionByManId(Integer manageId){
+		return permissionMapper.queryPermissionByManId(manageId);
+	}
+
+}

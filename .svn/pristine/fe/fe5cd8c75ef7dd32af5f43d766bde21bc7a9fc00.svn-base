@@ -1,0 +1,110 @@
+package com.risenb.manage.bean;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * 系统日志 
+ * @author Administrator
+ *
+ */
+public class SysRunLog implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6533316631060030884L;
+	/**
+	 * 日志id
+	 */
+	private String logId;
+	/**
+	 * 目标方法名
+	 */
+	private String methodName;
+	/**
+	 * 操作人id
+	 */
+	private Integer manageId; 
+	/**
+	 * 开始时间
+	 */
+	private Date startTime;
+	/**
+	 * 结束时间
+	 */
+	private Date endTime;
+	/**
+	 * 耗时 单位毫秒
+	 */
+	private Long consum;
+	/**
+	 * 请求参数
+	 */
+	private String args;
+	/**
+	 * 返回结果
+	 */
+	private String result;
+	/**
+	 * 保存时间
+	 */
+	private Date createTime;
+	public String getLogId() {
+		return logId;
+	}
+	public void setLogId(String logId) {
+		this.logId = logId;
+	}
+	public String getMethodName() {
+		return methodName;
+	}
+	public void setMethodName(String methodName) {
+		this.methodName = methodName;
+	}
+	public Date getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+	public Date getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
+	}
+	
+	public Long getConsum() {
+		return consum;
+	}
+	public void setConsum(Long consum) {
+		this.consum = consum;
+	}
+	
+	public Integer getManageId() {
+		return manageId;
+	}
+	public void setManageId(Integer manageId) {
+		this.manageId = manageId;
+	}
+	public String getArgs() {
+		return args;
+	}
+	public void setArgs(String args) {
+		this.args = args;
+	}
+	public String getResult() {
+		return result;
+	}
+	public void setResult(String result) {
+		this.result = result;
+	}
+	public Date getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	
+}

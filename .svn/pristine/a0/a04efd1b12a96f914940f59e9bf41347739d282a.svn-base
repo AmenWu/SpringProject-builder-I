@@ -1,0 +1,297 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+
+<head>
+	<%@ include file="../common/head.jsp"%>
+	<title>后台管理</title>
+	<!-- 全局js -->
+	<script src="<%=basePath%>js/plugins/metisMenu/jquery.metisMenu.js"></script>
+	<script src="<%=basePath%>js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+	
+	<!-- 自定义js -->
+	<script src="<%=basePath%>js/hplus.js?v=4.1.0"></script>
+	<script type="text/javascript" src="<%=basePath%>js/contabs.js"></script>
+	<!-- 第三方插件 -->
+	<script src="<%=basePath%>js/plugins/pace/pace.min.js"></script>
+	<script>
+		if (window.top != window.self) {
+			window.top.location = window.location;
+		}
+		//左侧菜单样式列表 详情参考 icon.html 根据项目需求调整
+		var iconArr = new Array("fa fa-list-ul","fa fa-bar-chart-o","fa fa-edit","fa  fa-desktop","fa fa-table","fa fa-picture-o","fa fa-columns","fa fa-film");
+		$(function(){
+			$(".tempClass").each(function(i){
+				var classtar= iconArr[i];
+				if(typeof(classtar) != "undefined"){
+					$(this).attr("class",classtar);
+				}
+			})
+		})
+	</script>
+</head>
+	
+<body class="fixed-sidebar full-height-layout gray-bgs" style="overflow: hidden">
+	<!--左侧导航开始-->
+	<nav class="navbar-default navbar-static-side" role="navigation">
+		<div class="nav-close">
+			<i class="fa fa-times-circle"></i>
+		</div>
+		<div class="sidebar-collapse">
+			<ul class="nav" id="side-menu">
+				<li class="nav-header">
+					<div class="dropdown profile-element">
+					    <span><img class="img-circle" src="${sessionManager.headImg}" style="max-width: 75px; max-height: 75px" /></span> 
+						<a data-toggle="dropdown" class="dropdown-toggle" href="#"> 
+							<span class="clear">
+								<span class="block m-t-xs">
+						  			<strong	class="font-bold">${sessionManager.userName }</strong>
+						  		</span> 
+						   		<span class="text-muted text-xs block"><b class="caret1"></b></span>
+							</span>
+					    </a>
+					</div>
+					<div class="logo-element">R</div>
+				</li>
+				<c:forEach var="pres" items="${menusBook}">
+					<li>
+						<a href="javascript:void(0)"> 
+							<i class="fa fa-list-ul tempClass "></i> 
+							<span class="nav-label">${pres.title}</span> 
+							<span class="fa arrow"></span>
+						</a> 
+						<c:if test="${!empty pres.children}">
+							<ul class="nav nav-second-level">
+								<c:forEach var="secend" items="${pres.children}">
+									<c:choose>
+										<c:when test="${!empty secend.children}">
+											<li>
+												<a href="javascript:void(0)">${secend.title} 
+													<span class="fa arrow"></span>
+												</a>
+												<ul class="nav nav-third-level">
+													<c:forEach var="third" items="${secend.children}">
+														<c:choose>
+															<c:when test="${!empty third.children}">
+																<ul class="nav nav-forth-level">
+																	<li>
+																		<ul class="nav nav-forth-level">
+																			<a href="#">${third.title} 
+																				<span class="fa arrow"></span>
+																			</a>
+																			<c:forEach var="forth" items="${third.children}">
+																				<c:choose>
+																					<c:when test="${!empty forth.children}">
+																						<li>
+																							<ul class="nav nav-fifth-level">
+																								<a href="#">${forth.title} 
+																									<span class="fa arrow"></span>
+																								</a>
+																								<c:forEach var="fifth" items="${forth.children}">
+																									<li>
+																										<a class="J_menuItem" href="<%=basePath %>${fifth.url}">${fifth.title}</a>
+																									</li>
+																								</c:forEach>
+																							</ul>
+																						</li>
+																					</c:when>
+																					<c:otherwise>
+																						<li>
+																							<a class="J_menuItem" href="<%=basePath %>${forth.url}">${forth.title}</a>
+																						</li>
+																					</c:otherwise>
+																				</c:choose>
+
+																			</c:forEach>
+																		</ul>
+																	</li>
+																</ul>
+															</c:when>
+															<c:otherwise>
+																<li>
+																	<a class="J_menuItem" href="<%=basePath %>${third.url}">${third.title}</a>
+																</li>
+															</c:otherwise>
+														</c:choose>
+
+													</c:forEach>
+												</ul></li>
+										</c:when>
+										<c:otherwise>
+											<li>
+												<a class="J_menuItem" href="<%=basePath %>${secend.url}">${secend.title}</a>
+											</li>
+										</c:otherwise>
+									</c:choose>
+								</c:forEach>
+							</ul>
+						</c:if>
+					</li>
+				</c:forEach>
+			</ul>
+
+		</div>
+	</nav>
+	<!--左侧导航结束-->
+	<!--右侧部分开始-->
+	<div id="page-wrapper" class="gray-bgs dashbard-1">
+		<div class="row border-bottom">
+			<nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+				<div class="navbar-header">
+					<a class="navbar-minimalize minimalize-styl-2 btn btn-primary" href="javascript:void(0)">
+						<i class="fa fa-bars"></i>
+					</a>
+				</div>
+<!-- 				<ul class="nav navbar-top-links navbar-right"> -->
+<!-- 					<li class="dropdown hidden-xs"> -->
+<!-- 						<a class="right-sidebar-toggle" aria-expanded="false">  -->
+<!-- 							<i class="fa fa-tasks"></i> 设置 -->
+<!-- 						</a> -->
+<!-- 					</li> -->
+<!-- 				</ul> -->
+			</nav>
+		</div>
+		<div class="row content-tabs" style="margin-right: -8px;">
+			<button class="roll-nav roll-left J_tabLeft">
+				<i class="fa fa-backward"></i>
+			</button>
+			<nav class="page-tabs J_menuTabs">
+				<div class="page-tabs-content">
+					<a href="javascript:;" class="active J_menuTab"data-id="index_v1.html">首页</a>
+				</div>
+			</nav>
+			<button class="roll-nav roll-right J_tabRight">
+				<i class="fa fa-forward"></i>
+			</button>
+			<div class="btn-group roll-nav roll-right">
+				<button class="dropdown J_tabClose" data-toggle="dropdown">
+					关闭操作<span class="caret"></span>
+				</button>
+				<ul role="menu" class="dropdown-menu dropdown-menu-right">
+					<li class="J_tabCloseAll"><a>关闭全部选项卡</a></li>
+					<li class="J_tabCloseOther"><a>关闭其他选项卡</a></li>
+				</ul>
+			</div>
+			<a href="<%=basePath%>login/logout.im" class="roll-nav roll-right J_tabExit">
+				<i class="fa fa fa-sign-out"></i> 退出
+			</a>
+		</div>
+		<div class="row J_mainContent" id="content-main" style="margin-right: 0px">
+			<iframe src="<%=basePath%>home/welcome.im" class="J_iframe" name="iframeIndex" width="100%" height="100%" frameborder="0" data-id="index_v1.html" seamless></iframe>
+		</div>
+		<div class="footer">
+			<div class="" style="text-align: center;">
+				Copyright &copy; 2017 <a href="javascript:;">鸿睿思博</a>
+			</div>
+		</div>
+	</div>
+	<!--右侧部分结束-->
+	<!--右侧边栏开始-->
+	<div id="right-sidebar" style="height: 137px">
+		<div class="sidebar-container">
+<!-- 			<ul class="nav nav-tabs navs-3"> -->
+<!-- 				<li class="active" style="width: 100%"> -->
+<!-- 					<a data-toggle="tab" href="#tab-1">  -->
+<!-- 						<i class="fa fa-gear"></i> 设置 -->
+<!-- 					</a> -->
+<!-- 				</li> -->
+<!-- 			</ul> -->
+
+			<div class="tab-content">
+				<div id="tab-1" class="tab-pane active">
+<!-- 					<div class="sidebar-title"> -->
+<!-- 						<h3> -->
+<!-- 							<i class="fa fa-comments-o"></i> 主题设置 -->
+<!-- 						</h3> -->
+<!-- 						<small><i class="fa fa-tim"></i> -->
+<!-- 							你可以从这里选择和预览主题的布局和样式，这些设置会被保存在本地，下次打开的时候会直接应用这些设置。</small> -->
+<!-- 					</div> -->
+					<div class="skin-setttings">
+						<div class="title">主题设置</div>
+						<div class="setings-item">
+							<span>收起左侧菜单</span>
+							<div class="switch">
+								<div class="onoffswitch">
+									<input type="checkbox" name="collapsemenu" class="onoffswitch-checkbox" id="collapsemenu"> 
+										<label class="onoffswitch-label" for="collapsemenu"> 
+										<span class="onoffswitch-inner"></span> 
+										<span class="onoffswitch-switch"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+<!-- 						<div class="setings-item"> -->
+<!-- 							<span>固定顶部</span> -->
+<!-- 							<div class="switch"> -->
+<!-- 								<div class="onoffswitch"> -->
+<!-- 									<input type="checkbox" name="fixednavbar" class="onoffswitch-checkbox" id="fixednavbar">  -->
+<!-- 									<label class="onoffswitch-label" for="fixednavbar">  -->
+<!-- 										<span class="onoffswitch-inner"></span>  -->
+<!-- 										<span class="onoffswitch-switch"></span> -->
+<!-- 									</label> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+						<div class="setings-item">
+							<span>固定宽度</span>
+							<div class="switch">
+								<div class="onoffswitch">
+									<input type="checkbox" name="boxedlayout" class="onoffswitch-checkbox" id="boxedlayout"> 
+									<label class="onoffswitch-label" for="boxedlayout"> 
+										<span class="onoffswitch-inner"></span> 
+										<span class="onoffswitch-switch"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+<!-- 						<div class="title">皮肤选择</div> -->
+<!-- 						<div class="setings-item default-skin nb"> -->
+<!-- 							<span class="skin-name ">  -->
+<!-- 								<a href="#" class="s-skin-0"> -->
+<!-- 									默认皮肤 -->
+<!-- 								</a> -->
+<!-- 							</span> -->
+<!-- 						</div> -->
+<!-- 						<div class="setings-item blue-skin nb"> -->
+<!-- 							<span class="skin-name ">  -->
+<!-- 								<a href="#" class="s-skin-1"> -->
+<!-- 									蓝色主题 -->
+<!-- 								</a> -->
+<!-- 							</span> -->
+<!-- 						</div> -->
+<!-- 						<div class="setings-item yellow-skin nb"> -->
+<!-- 							<span class="skin-name ">  -->
+<!-- 								<a href="#" class="s-skin-3"> -->
+<!-- 									黄色/紫色主题 -->
+<!-- 								</a> -->
+<!-- 							</span> -->
+<!-- 						</div> -->
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<!--右侧边栏结束-->
+</body>
+<script type="text/javascript">
+	function freshFrame(){
+		$(".J_iframe").each(function(){
+			var frame = $(this);
+			if(frame.css("display") != 'none'){
+				var name = frame.attr("name");
+				$(window.frames[name].document).find("#pageForm").submit();
+			}
+		})
+	}
+	function freshPremission(){
+		$(".J_iframe").each(function(){
+			var frame = $(this);
+			if(frame.css("display") != 'none'){
+				var name = frame.attr("name");
+				$(window.frames[name].document).find("#reloadPermison").trigger("click");
+			}
+		})
+	}
+</script>
+</html>

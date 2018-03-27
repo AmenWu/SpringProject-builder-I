@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.risenb.manage.dao.PermissionMapper" >
+
+	<sql id="Base_Column_List" >
+	 	 id, title, detail, status, parent_id, operator, opera_time,is_menu,sort,url
+	</sql>
+	<sql id="permissionRole_Column_List" >
+	  	id, role_id, permission_id, operator, opera_time
+	</sql>
+	  
+	<select id="queryPermissionById" resultType="com.risenb.manage.bean.Permission" parameterType="java.lang.Integer" >
+		  select 
+		  <include refid="Base_Column_List" />
+		  from sys_permission
+		  where id = #{id,jdbcType=INTEGER}
+	</select>
+ 
+	<select id="queryPermissionList" parameterType="com.risenb.manage.bean.Permission" resultType="com.risenb.manage.bean.Permission">
+		  select 
+		  <include refid="Base_Column_List" />
+		  from sys_permission 
+		  <where>
+		    <if test="ismenu != null" >
+		      is_menu = #{ismenu}
+		    </if>
+		    <if test="parentid != null" >
+		      parent_id = #{parentid}
+		    </if>
+		  </where>
+		   order by sort asc
+	</select>
+	
+		 
+	<select id="queryByManId" parameterType="java.lang.Integer" resultType="com.risenb.manage.bean.Permission">
+		 	SELECT sys_permission.*, IFNULL(p2.sort,0) parentSort 
+		 	from sys_permission sys_permission 
+		 	INNER JOIN (SELECT DISTINCT(permission_id) 
+					from sys_permission_role_rel 
+					where role_id in(
+						SELECT mrole.role_id 
+						from sys_manager_role_rel mrole
+						INNER JOIN sys_role sys_role
+						ON sys_role.id=mrole.role_id and sys_role.`status`=0
+						where manage_id=#{manId}))pds
+			ON sys_permission.id=pds.permission_id
+			LEFT JOIN sys_permission p2
+			ON p2.id=sys_permission.parent_id
+			ORDER BY sys_permission.sort ,parentSort
+	</select>
+ 
+	<delete id="removePermission" parameterType="com.risenb.manage.bean.Permission" >
+	  	delete from sys_permission 
+	  	 <where>
+	  	   <if test="id != null" >
+		      id = #{id}
+		    </if>
+		    <if test="parentid != null" >
+		      parent_id = #{parentid}
+		    </if>
+	  	 </where>
+	</delete>
+	
+	<!-- 根据parent_id删除权限信息 -->
+	<delete id="deletePermissionByParentId" parameterType="java.lang.Integer" >
+	  	delete from sys_permission where parent_id = #{parentId,jdbcType=INTEGER}
+	</delete>
+	 
+	<insert id="createPermission" parameterType="com.risenb.manage.bean.Permission" useGeneratedKeys="true" keyProperty="id">
+		  insert into sys_permission
+		  <trim prefix="(" suffix=")" suffixOverrides="," >
+		    <if test="title != null" >
+		      title,
+		    </if>
+		    <if test="detail != null" >
+		      detail,
+		    </if>
+		    <if test="status != null" >
+		      status,
+		    </if>
+		    <if test="parentid != null" >
+		      parent_id,
+		    </if>
+		    <if test="operator != null" >
+		      operator,
+		    </if>
+		    <if test="operatime != null" >
+		      opera_time,
+		    </if>
+		    <if test="sort != null" >
+		      sort,
+		    </if>
+		    <if test="url != null" >
+		      url,
+		    </if>
+		    <if test="ismenu != null" >
+		      is_menu,
+		    </if>
+		  </trim>
+		  <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="title != null" >
+		      #{title,jdbcType=VARCHAR},
+		    </if>
+		    <if test="detail != null" >
+		      #{detail,jdbcType=VARCHAR},
+		    </if>
+		    <if test="status != null" >
+		      #{status,jdbcType=INTEGER},
+		    </if>
+		    <if test="parentid != null" >
+		      #{parentid,jdbcType=INTEGER},
+		    </if>
+		    <if test="operator != null" >
+		      #{operator,jdbcType=INTEGER},
+		    </if>
+		    <if test="operatime != null" >
+		      #{operatime,jdbcType=TIMESTAMP},
+		    </if>
+		     <if test="sort != null" >
+		       #{sort,jdbcType=INTEGER},
+		    </if>
+		     <if test="url != null" >
+		       #{url,jdbcType=VARCHAR},
+		    </if>
+		     <if test="ismenu != null" >
+		       #{ismenu,jdbcType=INTEGER},
+		    </if>
+		  </trim>
+	</insert>
+	 
+	<update id="modifyPermissionById" parameterType="com.risenb.manage.bean.Permission" >
+		  update sys_permission
+		  <set >
+		    <if test="title != null" >
+		      title = #{title,jdbcType=VARCHAR},
+		    </if>
+		    <if test="detail != null" >
+		      detail = #{detail,jdbcType=VARCHAR},
+		    </if>
+		    <if test="status != null" >
+		      status = #{status,jdbcType=INTEGER},
+		    </if>
+		    <if test="parentid != null" >
+		      parent_id = #{parentid,jdbcType=INTEGER},
+		    </if>
+		    <if test="operator != null" >
+		      operator = #{operator,jdbcType=INTEGER},
+		    </if>
+		    <if test="operatime != null" >
+		      opera_time = #{operatime,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="sort != null" >
+		      sort = #{sort,jdbcType=INTEGER},
+		    </if>
+		    <if test="url != null" >
+		      url = #{url,jdbcType=VARCHAR},
+		    </if>
+		    <if test="ismenu != null" >
+		      is_menu = #{ismenu,jdbcType=INTEGER},
+		    </if>
+		  </set>
+		  where id = #{id,jdbcType=INTEGER}
+	</update>
+ <!-- fewfiawg -->
+
+	<select id="queryPermissionRoleById" resultType="com.risenb.manage.bean.Permission" parameterType="java.lang.Integer" >
+		  select 
+		  <include refid="permissionRole_Column_List" />
+		  from sys_permission_role_rel
+		  where id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="queryPermissionByRoleid" parameterType="java.lang.Integer" resultType="com.risenb.manage.bean.Permission">
+			select 
+		  <include refid="permissionRole_Column_List" />
+		  from sys_permission_role_rel
+		  where role_id = #{roleid,jdbcType=INTEGER}
+	</select>
+
+	<delete id="removePermissionRoleById" parameterType="java.lang.Integer" >
+	      delete from sys_permission_role_rel where id = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<delete id="removePermissionRoleByRoleId" parameterType="java.lang.Integer">
+		delete from sys_permission_role_rel where role_id = #{roleid,jdbcType=INTEGER}
+	</delete>
+
+	<insert id="createPermissionRole"  keyProperty="id" useGeneratedKeys="true" parameterType="com.risenb.manage.bean.Permission" >
+		  insert into sys_permission_role_rel
+		  <trim prefix="(" suffix=")" suffixOverrides="," >
+		    <if test="roleid != null" >
+		      role_id,
+		    </if>
+		    <if test="permissionid != null" >
+		      permission_id,
+		    </if>
+		    <if test="operator != null" >
+		      operator,
+		    </if>
+		    <if test="operatime != null" >
+		      opera_time,
+		    </if>
+		  </trim>
+		  <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="roleid != null" >
+		      #{roleid,jdbcType=INTEGER},
+		    </if>
+		    <if test="permissionid != null" >
+		      #{permissionid,jdbcType=INTEGER},
+		    </if>
+		    <if test="operator != null" >
+		      #{operator,jdbcType=INTEGER},
+		    </if>
+		    <if test="operatime != null" >
+		      #{operatime,jdbcType=TIMESTAMP},
+		    </if>
+		  </trim>
+	</insert>
+
+	<update id="modifyPermissionRoleById" parameterType="com.risenb.manage.bean.Permission" >
+		  update sys_permission_role_rel
+		  <set >
+		    <if test="roleid != null" >
+		      role_id = #{roleid,jdbcType=INTEGER},
+		    </if>
+		    <if test="permissionid != null" >
+		      permission_id = #{permissionid,jdbcType=INTEGER},
+		    </if>
+		    <if test="operator != null" >
+		      operator = #{operator,jdbcType=INTEGER},
+		    </if>
+		    <if test="operatime != null" >
+		      opera_time = #{operatime,jdbcType=TIMESTAMP},
+		    </if>
+		  </set>
+		  where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

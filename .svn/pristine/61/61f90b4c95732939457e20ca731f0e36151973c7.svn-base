@@ -1,0 +1,11 @@
+mysql.ip=117.122.208.135
+#mysql database username
+mysql.username=root
+#mysql database password
+mysql.password=123456
+#mysql database name
+mysql.db=risenb
+
+#zookeeper ip address
+#dubbo.registry.host=192.168.100.211:2181
+dubbo.registry.host=117.122.208.135

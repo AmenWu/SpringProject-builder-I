@@ -1,0 +1,66 @@
+package com.risenb.manage.service;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.risenb.manage.bean.PermissionRole;
+import com.risenb.manage.dao.PermissionRoleMapper;
+
+@Service(value = "permissionRoleService")
+public class PermissionRoleServiceImpl implements PermissionRoleService {
+	
+	@Autowired
+	PermissionRoleMapper permissionRoleMapper;
+
+	@Override
+	public List<PermissionRole> queryPermissionRoleList(PermissionRole permissionRole) {
+		return permissionRoleMapper.queryPermissionRoleList(permissionRole);
+	}
+	
+	//添加
+	@Override
+    public boolean insert(PermissionRole permissionRole){
+    	boolean flag = false;
+    	int num = permissionRoleMapper.insert(permissionRole);
+    	if (num > 0) {
+    		flag = true;
+    	}
+    	return flag;
+    }
+		
+	//编辑
+	@Override
+	public boolean update(PermissionRole permissionRole){
+		boolean flag = false;
+    	int num = permissionRoleMapper.update(permissionRole);
+    	if (num > 0) {
+    		flag = true;
+    	}
+    	return flag;
+	}
+		
+	//删除
+	@Override
+	public boolean delete(PermissionRole permissionRole){
+		boolean flag = false;
+    	int num = permissionRoleMapper.delete(permissionRole);
+    	if (num > 0) {
+    		flag = true;
+    	}
+    	return flag;
+	}
+	
+	//批量插入
+	@Override
+	public boolean batchCreatePermissionRole(Integer manageId,Integer roleId,List<String> pidList){
+		boolean flag = false;
+    	int num = permissionRoleMapper.batchCreatePermissionRole(manageId,roleId,pidList);
+    	if (num > 0) {
+    		flag = true;
+    	}
+    	return flag;
+	}
+	
+
+
+}

@@ -1,0 +1,38 @@
+package com.risenb.manage.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Service;
+
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.SysLog;
+import com.risenb.manage.dao.SysLogMapper;
+
+@Service("sysLogService")
+public class SysLogServiceImpl implements SysLogService {
+	@Autowired
+	SysLogMapper sysLogMapper;
+
+	@Autowired
+	ThreadPoolTaskExecutor threadPool;
+
+	@Override
+	public void createSysLog(SysLog sysLog) {
+		threadPool.execute(new Runnable() {
+			public void run() {
+				sysLogMapper.createSysLog(sysLog);
+			}
+		});
+	}
+
+	@Override
+	@Cacheable(cacheNames = "baseCache")
+	public Page<SysLog> queryLogList(Page<SysLog> page) {
+		List<SysLog> logList = sysLogMapper.queryLogListPage(page);
+		page.setResults(logList);
+		return page;
+	}
+}

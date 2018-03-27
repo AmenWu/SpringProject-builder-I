@@ -1,0 +1,36 @@
+package com.risenb.sms;
+
+import com.taobao.api.ApiException;
+import com.taobao.api.DefaultTaobaoClient;
+import com.taobao.api.TaobaoClient;
+import com.taobao.api.domain.BizResult;
+import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
+import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
+
+public class AlidayuSMS {
+	/**
+	 * 发送短信
+	 * @param phone 手机号
+	 * @param signName 签名
+	 * @param content 短信内容
+	 * @param template 模板编号
+	 * @return
+	 * @throws ApiException
+	 */
+	public static boolean sendSms(String phone, String signName, String content, String template) throws ApiException {
+		TaobaoClient client = new DefaultTaobaoClient(SMSConstant.ALI_URL, SMSConstant.ALI_APPKEY,SMSConstant.ALI_SECRET);
+		AlibabaAliqinFcSmsNumSendRequest req = new AlibabaAliqinFcSmsNumSendRequest();
+		req.setSmsType("normal");
+		req.setSmsFreeSignName(signName);
+		req.setSmsParamString(content);
+		req.setRecNum(phone);
+		req.setSmsTemplateCode(template);
+		AlibabaAliqinFcSmsNumSendResponse rsp = client.execute(req);
+		BizResult bizResult = rsp.getResult();
+		if (null != bizResult) {
+			return bizResult.getSuccess();
+		} else {
+			return false;
+		}		
+	}
+}

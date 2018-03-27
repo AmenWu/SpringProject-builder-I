@@ -1,0 +1,149 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+
+<%@ include file="../common/head.jsp" %>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="row">
+           <div class="" style="width: 200px; float:left;">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content mailbox-content" style="padding-top: 0px;">
+                        <div class="file-manager">
+                            <h5>权限列表</h5>
+                            <ul id="treeDemo" class="ztree" style="padding-top: 0px;"></ul>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <style>
+            #permissionList{
+				/* width: calc(100% -500px) !important; */
+				margin-left:210px;
+				margin-right:20px;
+				}
+            </style>
+            <div class="animated" id="permissionList">
+            	
+           </div>
+       </div>
+    </div>
+	<form action="<%=basePath%>permission/permissionList.im" id="pageForm" >
+	</form>
+<script type="text/javascript">
+	var setting = {
+			callback: {
+				onClick: zTreeOnClick
+			},
+			data: {
+				simpleData: {
+					enable: true,
+					idKey: "id",
+					pIdKey: "parentid"
+				},key: {
+					name: "title",
+					url: "xUrl"
+				}
+			}
+		};
+
+		var zNodes = ${ztreeJson};
+		//点击节点
+		function zTreeOnClick(event, treeId, treeNode) {
+		 	var url = "<%=basePath%>permission/permissionListData.im";
+			 $.post(
+			    url,
+			    {parentid:treeNode.id},
+			    function(obj){
+			    	  /*  if (obj.status == null){
+			    		$("#permissionListTable tbody").html('');
+			    		for(var i in obj){
+				    		 $("#permissionListTable").append('<tr class="gradeX"><td class="check-mail"></td><td>'
+				    				+obj[i].id+'</td><td>'
+				    				+obj[i].title+'</td><td>'
+				    				+obj[i].status+'</td><td>'
+				    				+obj[i].sort+'</td><td nowrap style="white-space:nowrap;word-break:nowrap" ><a href="javascript:void(0)" onclick="edit('
+				    						+obj[i].id+')" class="btn btn-default btn-xs boder"><i class="fa fa-pencil"></i>编辑</a>&nbsp;&nbsp;<a href="javascript:void(0)" onclick="del('
+				    						+obj[i].id+')" class="btn btn-default btn-xs boder"><i class="fa fa-trash-o"></i>删除</a></td></tr>'); 
+				    						
+				    	}
+			    	
+				    	
+				    	$("#permissionPid").val(treeNode.id);
+				    	
+			    	} else {
+			    		showFailMsg(obj.errorMsg);
+			    	}   */
+			    	if (obj.status == null){
+			    		 getPermissionList("/permission/ajaxPermissionListData.im?parentid="+treeNode.id,"permissionList");
+			    	}
+			    },
+			    "json"
+			);  
+		};
+		$(document).ready(function(){
+			$.fn.zTree.init($("#treeDemo"), setting, zNodes);
+			getPermissionList("/permission/ajaxPermissionListData.im", "permissionList");
+			
+		});
+		function getPermissionList(url,tar){
+			$("#"+tar).load(url);
+		}
+		
+		 //新增
+		function add(){
+			var permissionPid = $("#permissionPid").val();
+			parent.layer.open({
+			    type: 2,
+			    title: '新增',
+			    shadeClose: true,
+			    shade: shade,
+			    area: ['840px', '56%'],
+			    content: '<%=basePath%>permission/toSavePermissions.im?parentid='+permissionPid, 
+			});
+		}
+	    
+	    //编辑
+	    function edit(id){
+	    	var permissionPid = $("#permissionPid").val();
+			parent.layer.open({
+			    type: 2,
+			    title: '编辑',
+			    shadeClose: true,
+			    shade: shade,
+			    area: ['840px', '56%'],
+			    content: '<%=basePath%>permission/toSavePermissions.im?id='+id, 
+			});
+		}
+	    
+		  //删除
+		  function del(id){	
+			  var permissionPid = $("#permissionPid").val();
+			  parent.layer.confirm('您是确定要删除吗？', {
+			      btn: ['确定','取消'], //按钮
+			      shade: false 
+			  }, function(){
+				  $.ajax({
+			      		url:"<%=basePath%>permission/del.im",
+			      		type:"post",
+			      		data:{id:id},
+			      		dataType:"json",
+			      		success:function(state){
+			      			var status =  state.status;
+			 				if(status == null || state == 1){
+			      				location = '<%=basePath%>permission/permissionList.im?parentid='+permissionPid;
+			      				showSuccess("删除成功");
+			      			}else{
+			      				showFailMsg("删除失败");
+			      			}
+			      		}
+			      	});
+			  });
+	      }
+		
+</script>
+</body>
+
+</html>

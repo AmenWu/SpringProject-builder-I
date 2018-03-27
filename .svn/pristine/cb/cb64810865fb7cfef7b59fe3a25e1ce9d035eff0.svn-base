@@ -1,0 +1,23 @@
+package com.risenb.manage.service;
+
+import java.util.List;
+import com.risenb.manage.bean.PermissionRole;
+
+public interface PermissionRoleService {
+
+	//查询
+	List<PermissionRole> queryPermissionRoleList(PermissionRole permissionRole);
+	
+	//添加
+    boolean insert(PermissionRole permissionRole);
+		
+	//编辑
+	boolean update(PermissionRole permissionRole);
+		
+	//删除
+	boolean delete(PermissionRole permissionRole);
+	
+	//批量插入
+	boolean batchCreatePermissionRole(Integer manageId,Integer roleId,List<String> pidList);
+
+}

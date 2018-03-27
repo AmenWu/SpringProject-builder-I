@@ -1,0 +1,21 @@
+/**
+ * 
+ */
+package com.risenb.base;
+
+/**
+ * <pre>
+ * <p>Title: </p>
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2010 - 2016 </p>
+ * <p>Company: Beijing Risenb Technology Co.,Ltd. </p>
+ * <p>Build: 2017年8月15日 上午8:57:43 </p>
+ * </pre>
+ *
+ * @author Chang Yuxin
+ * @version 1.0
+ */
+public abstract class BaseService {
+
+
+}

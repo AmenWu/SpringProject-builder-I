@@ -1,0 +1,15 @@
+### 微信支付配置文件 ###
+### 微信预支付url ###
+WX_URL=https://api.mch.weixin.qq.com/pay/unifiedorder
+### 微信支付应用id  ###
+WX_APPID=wx40a58b3c2f3872ad
+### 微信支付商户号id  ###
+WX_MCH_ID=1393480102
+### 微信支付密钥 ###
+WX_SIGNKEY=Db7kJidvZ10i91MHUGcDThHVPGuLdLxd
+###  微信支付certpwd ###
+WX_CERTPWD=1393480102
+### 微信支付trade_type ###
+WX_TRADE_TYPE=APP
+### 微信支付回调地址 ###
+WX_NOTIFY_URL=http://api.uyees.com/notice/wxNotice.do

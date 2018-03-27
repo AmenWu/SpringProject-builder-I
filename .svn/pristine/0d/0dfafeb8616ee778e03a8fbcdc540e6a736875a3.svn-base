@@ -1,0 +1,84 @@
+package com.risenb.cache;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import com.risenb.manage.bean.Permission;
+
+/**
+ * <pre>
+ * <p>Title: </p>
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2010 - 2016 </p>
+ * <p>Company: Beijing Risenb Technology Co.,Ltd. </p>
+ * <p>Build: 2017年7月26日 下午5:00:57 </p>
+ * </pre>
+ *
+ * @author Chang Yuxin
+ * @version 1.0
+ */
+public class CacheFactory {
+	private static Map<String, Object> CACHE = new HashMap<String, Object>();
+
+	// HashMap<String,HttpSession>();//管理员登录的session管理
+	private static Map<String, HttpSession> LOGIN_STATUS_CACHE = new HashMap<String, HttpSession>(0);// 管理员登录的session管理
+
+	private static Map<Integer, Permission> PERMISSION_CACHE = new HashMap<Integer, Permission>();
+
+	static {
+		CACHE.put("LOGIN_STATUS", LOGIN_STATUS_CACHE);
+		CACHE.put("PERMISSION_CACHE", PERMISSION_CACHE);
+	}
+
+	/**
+	 * @param cacheName
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static Object get(String cacheName) {
+		return (Map<Object, Object>) CACHE.get(cacheName);
+	}
+
+	/**
+	 * @param cacheName
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static Object get(String cacheName, Object key) {
+		return ((Map<Object, Object>) CACHE.get(cacheName)).get(key);
+	}
+
+	/**
+	 * @param cacheName
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static void put(String cacheName, Object key, Object value) {
+		Map<Object, Object> map = (Map<Object, Object>) CACHE.get(cacheName);
+		map.put(key, value);
+	}
+
+	/**
+	 * @param cacheName
+	 * @param key
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static boolean contains(String cacheName, Object key) {
+		return ((Map<Object, Object>) CACHE.get(cacheName)).containsKey(key);
+	}
+
+	/**
+	 * @param string
+	 * @param userName
+	 */
+	@SuppressWarnings("unchecked")
+	public static void remove(String cacheName, Object key) {
+		((Map<Object, Object>) CACHE.get(cacheName)).remove(key);
+	}
+
+}

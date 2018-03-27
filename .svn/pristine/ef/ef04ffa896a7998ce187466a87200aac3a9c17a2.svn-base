@@ -1,0 +1,35 @@
+package com.risenb.manage.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import com.risenb.manage.bean.Manager;
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Role;
+
+@Repository
+public interface ManagerMapper {
+	
+    int createManager(Manager manager);
+
+    Manager queryManagerById(Integer manageId);
+
+    int modifyManagerById(Manager manager);
+      
+    List<Manager> queryManagerListPage(Page<Manager> page);
+ 
+    Manager queryManager(Manager manager);
+  
+    int removeManagerByIds(List<String> manageIdList);
+
+	List<Role> queryRoleList();
+
+	int assignRole(Map<String, Object> map);
+
+	int delRoleByManageId(Map<String, Object> map);
+
+	List<Role> queryExistingRoleByMid(Integer manageId);
+	
+}

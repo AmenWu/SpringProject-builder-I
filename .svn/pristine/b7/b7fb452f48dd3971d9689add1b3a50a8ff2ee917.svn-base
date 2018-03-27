@@ -1,0 +1,24 @@
+package com.risenb.cache;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+/**
+ * <pre>
+ * <p>Title: </p>
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2010 - 2016 </p>
+ * <p>Company: Beijing Risenb Technology Co.,Ltd. </p>
+ * <p>Build: 2017年7月26日 下午5:00:57 </p>
+ * </pre>
+ *
+ * @author Chang Yuxin
+ * @version 1.0
+ */
+public class CacheFactory {
+
+	// public static Cache<String,HttpSession> LOGIN_STATUS_CACHE = new HashMap<String,HttpSession>();//管理员登录的session管理
+	public static Map<String, HttpSession> LOGIN_STATUS_CACHE = new HashMap<String, HttpSession>(0);// 管理员登录的session管理
+}

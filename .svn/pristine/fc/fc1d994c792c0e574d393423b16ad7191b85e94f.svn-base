@@ -1,0 +1,233 @@
+package com.risenb.manage.bean;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class SysOpLog implements Serializable {
+	
+	private static final long serialVersionUID = 512182910850379956L;
+
+	private Integer log_Id;
+
+	private Integer userId;
+	
+    private String operator;
+
+    private Date operaTime;
+
+    private String opreaType;
+
+    private String target;
+
+    private String content;
+
+    private Integer status;
+
+    private Integer type;
+    
+    private Manager manager;
+    
+    private Date createTime;
+
+    private String operaTimeStr;
+    
+    private String ip;
+
+	/**
+	 * @return the log_Id
+	 */
+	public Integer getLog_Id() {
+		return log_Id;
+	}
+
+	/**
+	 * @param log_Id the log_Id to set
+	 */
+	public void setLog_Id(Integer log_Id) {
+		this.log_Id = log_Id;
+	}
+
+	/**
+	 * @return the userId
+	 */
+	public Integer getUserId() {
+		return userId;
+	}
+
+	/**
+	 * @param userId the userId to set
+	 */
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	/**
+	 * @return the operator
+	 */
+	public String getOperator() {
+		return operator;
+	}
+
+	/**
+	 * @param operator the operator to set
+	 */
+	public void setOperator(String operator) {
+		this.operator = operator;
+	}
+
+	/**
+	 * @return the operaTime
+	 */
+	public Date getOperaTime() {
+		return operaTime;
+	}
+
+	/**
+	 * @param operaTime the operaTime to set
+	 */
+	public void setOperaTime(Date operaTime) {
+		this.operaTime = operaTime;
+	}
+
+	/**
+	 * @return the opreaType
+	 */
+	public String getOpreaType() {
+		return opreaType;
+	}
+
+	/**
+	 * @param opreaType the opreaType to set
+	 */
+	public void setOpreaType(String opreaType) {
+		this.opreaType = opreaType;
+	}
+
+	/**
+	 * @return the target
+	 */
+	public String getTarget() {
+		return target;
+	}
+
+	/**
+	 * @param target the target to set
+	 */
+	public void setTarget(String target) {
+		this.target = target;
+	}
+
+	/**
+	 * @return the content
+	 */
+	public String getContent() {
+		return content;
+	}
+
+	/**
+	 * @param content the content to set
+	 */
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	/**
+	 * @return the status
+	 */
+	public Integer getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public Integer getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	/**
+	 * @return the manager
+	 */
+	public Manager getManager() {
+		return manager;
+	}
+
+	/**
+	 * @param manager the manager to set
+	 */
+	public void setManager(Manager manager) {
+		this.manager = manager;
+	}
+
+	/**
+	 * @return the createTime
+	 */
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	/**
+	 * @param createTime the createTime to set
+	 */
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	/**
+	 * @return the operaTimeStr
+	 */
+	public String getOperaTimeStr() {
+		return operaTimeStr;
+	}
+
+	/**
+	 * @param operaTimeStr the operaTimeStr to set
+	 */
+	public void setOperaTimeStr(String operaTimeStr) {
+		this.operaTimeStr = operaTimeStr;
+	}
+
+	/**
+	 * @return the ip
+	 */
+	public String getIp() {
+		return ip;
+	}
+
+	/**
+	 * @param ip the ip to set
+	 */
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public SysOpLog(String operator, Date operatime, String opreatype,
+			String target, String content, Integer status, Integer type) {
+		super();
+		this.operator = operator;
+		this.operaTime = operatime;
+		this.target = target;
+		this.content = content;
+		this.status = status;
+		this.type = type;
+	}
+
+	public SysOpLog() {
+		super();
+	}
+	
+}

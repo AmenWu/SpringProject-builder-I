@@ -1,0 +1,24 @@
+package com.risenb.manage.dao;
+
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Role;
+
+@Repository
+public interface RoleMapper {
+	
+    int createRole(Role record); 
+
+    Role queryRoleById(Integer id); 
+
+    int modifyRoleById(Role record); 
+
+    int removeRoleByIds(List<String> ids); 
+    
+	List<Role> roleListByPage(Page<Role> page);
+
+    
+}

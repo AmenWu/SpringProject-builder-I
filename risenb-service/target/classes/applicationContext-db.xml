@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+        http://www.springframework.org/schema/context    
+        http://www.springframework.org/schema/context/spring-context-4.2.xsd    
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
+
+
+	<!-- MySQL 数据源 -->
+	<bean id="mysqlDataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://${mysql.ip}:33060/${mysql.db}?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull" />
+		<property name="username" value="${mysql.username}" />
+		<property name="password" value="${mysql.password}" />
+		<!-- 初始化连接大小 -->
+		<property name="initialSize" value="1" />
+		<!-- 连接池最大使用连接数量 -->
+		<property name="maxActive" value="1500" />
+		<!-- 连接池最小空闲 -->
+		<property name="minIdle" value="1500" />
+		<!-- 获取连接最大等待时间 -->
+		<property name="maxWait" value="60000" />
+
+		<property name="validationQuery" value="SELECT 1" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="testWhileIdle" value="true" />
+
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="25200000" />
+
+		<!-- 打开removeAbandoned功能 -->
+		<property name="removeAbandoned" value="true" />
+		<!-- 1800秒，也就是30分钟 -->
+		<property name="removeAbandonedTimeout" value="1800" />
+		<!-- 关闭abanded连接时输出错误日志 -->
+		<property name="logAbandoned" value="true" />
+
+		<!-- 监控数据库 -->
+		<!-- <property name="filters" value="stat" /> -->
+		<property name="filters" value="mergeStat" />
+	</bean>
+
+	<bean id="ysSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<property name="mapperLocations" value="classpath*:mapping/*.xml"></property>
+		<property name="dataSource" ref="mysqlDataSource" />
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="mysqlDataSource" />
+	</bean>
+
+	<!-- 事务切面 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="remove*"  propagation="REQUIRED" rollback-for="Exception"/>
+			<tx:method name="create*"  propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="modify*"  propagation="REQUIRED" rollback-for="Exception"/>
+			<tx:method name="query*"   propagation="SUPPORTS"/>
+			<tx:method name="get*"     propagation="SUPPORTS" />
+			<tx:method name="*"        propagation="SUPPORTS" rollback-for="Exception" />
+		</tx:attributes>
+	</tx:advice>
+	<!-- 配置事务切入点 -->
+	<aop:config>
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* com.risenb.*.service.*Impl.*(..))" />
+	</aop:config>
+
+	<!-- aop动态代理 -->
+	<aop:aspectj-autoproxy />
+
+	<!-- mapper自动扫描 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactoryBeanName" value="ysSqlSessionFactory" />
+		<property name="basePackage" value="com.risenb" />
+		<property name="annotationClass" value="org.springframework.stereotype.Repository" />
+	</bean>
+	<!-- 异步线程池 -->
+	<bean id="threadPool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<!-- 核心线程数 -->
+		<property name="corePoolSize" value="50" />
+		<!-- 最大线程数 -->
+		<property name="maxPoolSize" value="50" />
+		<!-- 队列最大长度 >=mainExecutor.maxSize -->
+		<property name="queueCapacity" value="1000" />
+		<!-- 线程池维护线程所允许的空闲时间 -->
+		<property name="keepAliveSeconds" value="300" />
+		<!-- 线程池对拒绝任务(无线程可用)的处理策略 -->
+		<property name="rejectedExecutionHandler">
+			<!-- 默认策略 处理程序遭到拒绝将抛出运行时 RejectedExecutionException -->
+			<!-- <bean class="java.util.concurrent.ThreadPoolExecutor$AbortPolicy" /> -->
+			<!--调用者的线程会执行该任务,如果执行器已关闭,则丢弃 -->
+			<bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />
+			<!--不能执行的任务将被丢弃 -->
+			<!-- <bean class="java.util.concurrent.ThreadPoolExecutor$DiscardPolicy" /> -->
+			<!-- 如果执行程序尚未关闭，则位于工作队列头部的任务将被删除，然后重试执行程序（如果再次失败，则重复此过程）. -->
+			<!--<bean class="java.util.concurrent.ThreadPoolExecutor$DiscardOldestPolicy" /> -->
+		</property>
+	</bean>  
+	<!-- service执行日志切面 -->
+<!-- 	<bean id="methodInterceptor" class="com.risenb.aop.MethodConsumeAdvice"/>   -->
+<!--     <aop:config proxy-target-class="true">   -->
+<!--         <aop:pointcut id="methodPointcut" expression="execution(* com.risenb.*.service.*Impl.*(..)) "/>   -->
+<!--         <aop:advisor advice-ref="methodInterceptor" pointcut-ref="methodPointcut" />   -->
+<!--     </aop:config>   -->
+</beans>

@@ -1,0 +1,220 @@
+package com.risenb.manage.bean;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+
+public class Permission implements Serializable {
+	
+	private static final long serialVersionUID = 7834665900041554028L;
+
+	private Integer permissionId;  
+	private String title;	   //权限名称
+	private String detail;
+	private Integer status;     
+	private Integer parentid;   //父权限id
+	private Integer operator;
+	private Date operatime;
+	private String showOperatime;
+	private Integer ismenu;		//权限类型  0：左侧菜单 1：功能菜单
+	List<Permission> children;
+	private Integer sort;
+	private String url;
+	private Integer parentSort;
+	private Boolean open = true;  
+    private Integer roleid;
+    private Permission permission;
+	/**
+	 * @return the permissionId
+	 */
+	public Integer getPermissionId() {
+		return permissionId;
+	}
+	/**
+	 * @param permissionId the permissionId to set
+	 */
+	public void setPermissionId(Integer permissionId) {
+		this.permissionId = permissionId;
+	}
+	/**
+	 * @return the title
+	 */
+	public String getTitle() {
+		return title;
+	}
+	/**
+	 * @param title the title to set
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	/**
+	 * @return the detail
+	 */
+	public String getDetail() {
+		return detail;
+	}
+	/**
+	 * @param detail the detail to set
+	 */
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
+	/**
+	 * @return the status
+	 */
+	public Integer getStatus() {
+		return status;
+	}
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+	/**
+	 * @return the parentid
+	 */
+	public Integer getParentid() {
+		return parentid;
+	}
+	/**
+	 * @param parentid the parentid to set
+	 */
+	public void setParentid(Integer parentid) {
+		this.parentid = parentid;
+	}
+	/**
+	 * @return the operator
+	 */
+	public Integer getOperator() {
+		return operator;
+	}
+	/**
+	 * @param operator the operator to set
+	 */
+	public void setOperator(Integer operator) {
+		this.operator = operator;
+	}
+	/**
+	 * @return the operatime
+	 */
+	public Date getOperatime() {
+		return operatime;
+	}
+	/**
+	 * @param operatime the operatime to set
+	 */
+	public void setOperatime(Date operatime) {
+		this.operatime = operatime;
+	}
+	/**
+	 * @return the showOperatime
+	 */
+	public String getShowOperatime() {
+		return showOperatime;
+	}
+	/**
+	 * @param showOperatime the showOperatime to set
+	 */
+	public void setShowOperatime(String showOperatime) {
+		this.showOperatime = showOperatime;
+	}
+	/**
+	 * @return the ismenu
+	 */
+	public Integer getIsmenu() {
+		return ismenu;
+	}
+	/**
+	 * @param ismenu the ismenu to set
+	 */
+	public void setIsmenu(Integer ismenu) {
+		this.ismenu = ismenu;
+	}
+	/**
+	 * @return the children
+	 */
+	public List<Permission> getChildren() {
+		return children;
+	}
+	/**
+	 * @param children the children to set
+	 */
+	public void setChildren(List<Permission> children) {
+		this.children = children;
+	}
+	/**
+	 * @return the sort
+	 */
+	public Integer getSort() {
+		return sort;
+	}
+	/**
+	 * @param sort the sort to set
+	 */
+	public void setSort(Integer sort) {
+		this.sort = sort;
+	}
+	/**
+	 * @return the url
+	 */
+	public String getUrl() {
+		return url;
+	}
+	/**
+	 * @param url the url to set
+	 */
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	/**
+	 * @return the parentSort
+	 */
+	public Integer getParentSort() {
+		return parentSort;
+	}
+	/**
+	 * @param parentSort the parentSort to set
+	 */
+	public void setParentSort(Integer parentSort) {
+		this.parentSort = parentSort;
+	}
+	/**
+	 * @return the open
+	 */
+	public Boolean getOpen() {
+		return open;
+	}
+	/**
+	 * @param open the open to set
+	 */
+	public void setOpen(Boolean open) {
+		this.open = open;
+	}
+	/**
+	 * @return the roleid
+	 */
+	public Integer getRoleid() {
+		return roleid;
+	}
+	/**
+	 * @param roleid the roleid to set
+	 */
+	public void setRoleid(Integer roleid) {
+		this.roleid = roleid;
+	}
+	/**
+	 * @return the permission
+	 */
+	public Permission getPermission() {
+		return permission;
+	}
+	/**
+	 * @param permission the permission to set
+	 */
+	public void setPermission(Permission permission) {
+		this.permission = permission;
+	}
+	
+}

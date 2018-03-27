@@ -1,0 +1,27 @@
+package com.risenb.manage.service;
+
+import java.util.List;
+import com.risenb.manage.bean.Permission;
+
+public interface PermissionService {
+	
+	int removePermissionById(Integer id);     
+
+	int createPermission(Permission permission);     
+
+	Permission queryPermissionById(Integer id);  
+
+	int modifyPermissionById(Permission permission);  
+
+	List<Permission> queryPermissionByParentId(Integer parentid); 
+	
+	List<Permission> queryPermissionListById(Integer id);  
+	
+	List<Permission> queryPermissionByRid(Integer rid);  
+
+	int removePermissionRoleByRoleId(Integer roleid);
+
+	int createPermissionRole(Permission record);  
+
+	List<Permission> queryPermissionList();  
+}

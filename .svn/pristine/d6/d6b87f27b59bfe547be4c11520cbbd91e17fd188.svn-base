@@ -1,0 +1,101 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+
+<%@ include file="../common/head.jsp" %>
+
+<head>
+ 	<script type="text/javascript">
+ 	
+    $().ready(function () {
+        $("#signupForm").validate({
+            rules: {
+                username: "required",
+                password: "required",
+                name:"required",
+                phone:{
+                	required: true,
+                	minlength: 11
+                },
+            },
+            messages: {
+                username: icon + "用户名不能为空",
+                lastname: icon + "密码不能为空",
+                name: icon + "真实姓名不能为空",
+                phone:{
+                	required: icon + "电话不能为空",
+                	minlength: icon + "电话格式不正确"
+                }
+            },
+            submitHandler: function(){
+            	save();
+            }
+        });
+    });
+ 	
+    function save(){	
+    	$.ajax({
+    		url:"<%=basePath%>manage/saveManager.im",
+    		type:"post",
+    		data:$("#signupForm").serialize(),
+    		dataType:"json",
+    		success:function(state){
+    			if(state == 1){
+    				if($("[name = 'id']").val() != ''){
+     				showSuccess("修改成功");
+    				}else{
+    					showSuccess("添加成功");
+    				}
+    				window.top.freshFrame();
+    				closeWindow();
+    			}else{
+    				showFailMsg("操作失败！");
+    			}
+    		}
+    	});
+    }
+        
+      </script>
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="col-sm-6" style="width: 800px;" >
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content">
+                        <form class="form-horizontal m-t" id="signupForm" action="<%=basePath %>manage/saveManager.im" >
+                             <input type="hidden" name="id" value="${manager.id}">
+     				  		 <input type="hidden" name="idkey" value="${manager.idkey}">
+                            <div class="pageFormContent" data-layout-h="0">
+					            <hr>
+					            <div class="form-group" style="margin: 20px 0 20px; ">
+					                <label class="control-label x85">用户名称：</label>
+                         		    <input class="form-control" style="display: inline;width: 620px;" type="text" name="username" id="username" value="${manager.username }"  >
+					            </div>
+					            <div class="form-group" style="margin-left: 0px;" >
+					                 <label class="control-label x85">用户密码：</label>
+                         		     <input class="form-control" style="display: inline;width: 620px;" type="password" name="password" value="${manager.password }"  size="15">
+					            </div>
+					            <div class="form-group" style="margin-left: 0px;" >
+					                 <label class="control-label x85">真实姓名：</label>
+                         		     <input class="form-control" style="display: inline;width: 620px;" type="text" name="name" id="name" value="${manager.name }" data-rule="required" size="15">
+					            </div>
+					            <div class="form-group" style="margin-left: 0px;" >
+					                 <label class="control-label x85">手机号码：</label>
+                       			     <input class="form-control" style="display: inline;width: 620px;" type="text" name="phone" id="phone" value="${manager.phone }" data-rule="required;mobile" size="15">
+					            </div>
+							</div>
+                            <div class="form-group">
+				                <div class="col-sm-8 col-sm-offset-3">
+				                   <button class="btn btn-primary" type="submit">保存</button>
+				                   <button class="btn" type="button"  onclick="back()" style="margin-left: 110px;" >返回</button>
+				                </div>
+				            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+
+</html>

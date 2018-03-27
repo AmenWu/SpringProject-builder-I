@@ -1,0 +1,96 @@
+/**
+ * 
+ */
+package com.risenb.bean;
+
+/**
+ * <pre>
+ * <p>Title: </p>
+ * <p>Description: 错误编码说明：错误编码共六位， 前两位表示错误级别，中间两位为模块，后两位为错误错误编码，
+ * 				        错误级别：10:系统级别，20：服务级别
+ * 				        模块：01：数据查询模块，02：运维模块，03：预处理模块，04：数据分析模块
+ * 				   eg:100101
+ * 				   10为系统级别错误，01为模块，01为错误编码</p>
+ * <p>Copyright: Copyright (c) 2010 - 2016 </p>
+ * <p>Company: Beijing Risenb Technology Co.,Ltd. </p>
+ * <p>Build: 2016年11月7日 下午6:26:05 </p>
+ * </pre>
+ *
+ * @author Chang Yuxin
+ * @version 1.0
+ */
+public enum Error {
+	//----------------------------------------系统
+	_100101("100101", " 系统错误！"),
+	//----------------------------------------数据查询模块
+	_200101("200101", " 查询数据失败！"),
+	_200102("200102", " 查询数据无结果！"),
+	_200103("200103", " 统计数据失败！"),
+	_200104("200104", " 统计数据无结果！"),
+	_200105("200105", " 没有权限！"),
+	//----------------------------------------数据运维模块
+	_200201("200201", " 参数为空！"),
+	_200202("200202", " 参数长度超长，最大:"),
+	_200203("200203", " 查询无结果！"),
+	_200204("200204", " 更新失败！"),
+	_200205("200205", " 删除失败！"),
+	_200206("200206", " 请输入数字！"),
+	_200207("200207", " 不能小于1 ！"),
+	_200208("200208", " 不能大于100 ！"),
+	_200211("200211", " 添加失败！");
+
+	/** 错误编码 */
+	private String errorCode;
+
+	/** 错误信息 */
+	private String errorMsg;
+
+	private Error(String errorCode, String errorMsg) {
+		this.errorCode = errorCode;
+		this.errorMsg = errorMsg;
+	}
+
+	/**
+	 * @return the errorCode
+	 */
+	public String getErrorCode() {
+		return errorCode;
+	}
+	
+	/**
+	 * @param name
+	 * @return String
+	 */
+	public static String code(String name){
+		return Error.valueOf(name).errorCode;
+	}
+	
+	/**
+	 * @param errorCode the errorCode to set
+	 */
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	/**
+	 * @return the errorMsg
+	 */
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+	
+	/**
+	 * @param name
+	 * @return String
+	 */
+	public static String msg(String name){
+		return Error.valueOf(name).errorMsg;
+	}
+	
+	/**
+	 * @param errorMsg the errorMsg to set
+	 */
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
+	}
+}

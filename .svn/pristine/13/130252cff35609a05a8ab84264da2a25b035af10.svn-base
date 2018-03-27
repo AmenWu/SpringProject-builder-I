@@ -1,0 +1,162 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+
+<%@ include file="../common/head.jsp" %>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="row">
+           <div class="" style="width: 200px; float:left;">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content mailbox-content" style="padding-top: 0px;">
+                        <div class="file-manager">
+                            <h5>权限列表</h5>
+                            <ul id="treeDemo" class="ztree" style="padding-top: 0px;"></ul>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <style>
+            #lists{
+				/* width: calc(100% -500px) !important; */
+				margin-left:210px;
+				}
+            </style>
+            <div class=" animated" id="lists">
+            	<a class="btn btn-primary" href="javascript:;" onclick="add()" style="margin-bottom: 10px;" >新增</a>
+                <div class="table_data">
+				      <table id="permissionListTable" class="table table-striped table-bordered table-hover" >  
+				        
+				            <thead>
+				            	<tr class="unread" >
+					            	<th> </th>
+					            	<th>权限ID</th>
+					            	<th>权限名称</th>
+					                <th>状态</th>
+					                <th>排序</th>
+					                <th width="50px">操作</th>
+				           		</tr>
+				            </thead>
+				            <tbody>
+								<c:forEach var="ps" items="${menubodys}">
+						            <tr class="read">
+						            	<td></td>
+						            	<td>${ps.id}</td>
+						            	<td>${ps.title}</td>
+						            	<td>${ps.status}</td>
+						            	<td>${ps.sort}</td>
+						            	<td nowrap style="white-space:nowrap;word-break:nowrap">
+						            		<a href="javascript:;" onclick="edit(${ps.id})" class="btn btn-default btn-xs " ><i class="fa fa-pencil"></i> 编辑</a>
+											<a href="javascript:;" onclick="del(${ps.id})" class="btn btn-default btn-xs " ><i class="fa fa-trash-o"></i> 删除</a>
+						            	</td>
+						            </tr>
+					            </c:forEach>
+				         </tbody>
+				    </table>
+                </div>
+           </div>
+       </div>
+    </div>
+	<form action="<%=basePath%>permission/permissionList.im" id="pageForm" >
+		<input type="hidden" name="parentid" id="permissionPid" value="${parentid}"/>
+	</form>
+<script type="text/javascript">
+	var setting = {
+			callback: {
+				onClick: zTreeOnClick
+			},
+			data: {
+				simpleData: {
+					enable: true,
+					idKey: "id",
+					pIdKey: "parentid"
+				},key: {
+					name: "title",
+					url: "xUrl"
+				}
+			}
+		};
+
+		var zNodes = ${ztreeJson};
+		//点击节点
+		function zTreeOnClick(event, treeId, treeNode) {
+		 	var url = "<%=basePath%>permission/permissionListData.im";
+			$.post(
+			    url,
+			    {parentid:treeNode.id},
+			    function(obj){
+			    	$("#permissionListTable tbody").html('');
+			    	for(var i in obj){
+			    		$("#permissionListTable").append('<tr class="gradeX"><td class="check-mail"></td><td>'
+			    				+obj[i].id+'</td><td>'
+			    				+obj[i].title+'</td><td>'
+			    				+obj[i].status+'</td><td>'
+			    				+obj[i].sort+'</td><td nowrap style="white-space:nowrap;word-break:nowrap" ><a href="javascript:void(0)" onclick="edit('
+			    						+obj[i].id+')" class="btn btn-default btn-xs boder"><i class="fa fa-pencil"></i>编辑</a>&nbsp;&nbsp;<a href="javascript:void(0)" onclick="del('
+			    						+obj[i].id+')" class="btn btn-default btn-xs boder"><i class="fa fa-trash-o"></i>删除</a></td></tr>');
+			    	}
+			    	$("#permissionPid").val(treeNode.id);
+			    },
+			    "json"
+			); 
+		};
+		$(document).ready(function(){
+			$.fn.zTree.init($("#treeDemo"), setting, zNodes);
+		});
+		
+		 //新增
+		function add(){
+			var permissionPid = $("#permissionPid").val();
+			parent.layer.open({
+			    type: 2,
+			    title: '新增',
+			    shadeClose: true,
+			    shade: shade,
+			    area: ['840px', '56%'],
+			    content: '<%=basePath%>permission/toSavePermissions.im?parentid='+permissionPid, 
+			});
+		}
+	    
+	    //编辑
+	    function edit(id){
+	    	var permissionPid = $("#permissionPid").val();
+			parent.layer.open({
+			    type: 2,
+			    title: '编辑',
+			    shadeClose: true,
+			    shade: shade,
+			    area: ['840px', '56%'],
+			    content: '<%=basePath%>permission/toSavePermissions.im?id='+id, 
+			});
+		}
+	    
+		  //删除
+		  function del(id){	
+			  var permissionPid = $("#permissionPid").val();
+			  parent.layer.confirm('您是确定要删除吗？', {
+			      btn: ['确定','取消'], //按钮
+			      shade: false 
+			  }, function(){
+				  $.ajax({
+			      		url:"<%=basePath%>permission/del.im",
+			      		type:"post",
+			      		data:{id:id},
+			      		dataType:"json",
+			      		success:function(state){
+			      			if(state == 1){
+			      				location = '<%=basePath%>permission/permissionList.im?parentid='+permissionPid;
+			      				showSuccess("删除成功");
+			      			}else{
+			      				showFailMsg("删除失败");
+			      			}
+			      		}
+			      	});
+			  });
+	      }
+		
+</script>
+</body>
+
+</html>

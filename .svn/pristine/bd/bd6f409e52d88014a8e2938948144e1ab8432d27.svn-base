@@ -1,0 +1,66 @@
+package com.risenb.manage.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Permission;
+import com.risenb.manage.bean.Role;
+import com.risenb.manage.dao.ManagerMapper;
+import com.risenb.manage.dao.RoleMapper;
+import com.risenb.manage.service.RoleService;
+import com.risenb.util.DateUtil;
+
+@Service(value = "roleService")
+public class RoleServiceImpl implements RoleService {
+	
+	@Autowired
+	RoleMapper roleMapper;
+	
+	@Autowired
+	PermissionService permissionService;
+	
+	@Autowired
+	ManagerMapper managerMapper;
+	
+	@Override
+	public int createRole(Role record) {
+		return roleMapper.createRole(record);
+	}
+
+	@Override
+	public Role queryRoleById(Integer id) {
+		Role role = roleMapper.queryRoleById(id);
+		if(role!=null){
+			role.setPermissionList(permissionService.queryPermissionByRid(role.getId()));
+		}
+		return role;
+	}
+
+	@Override
+	public int modifyRoleById(Role record) {
+		return roleMapper.modifyRoleById(record);
+	}
+
+	@Override
+	public Page<Role> roleListByPage(Page<Role> page) {
+		List<Role> roles = roleMapper.roleListByPage(page);
+		for (int i = 0; i < roles.size(); i++) {
+			roles.get(i).setOperatorManage(managerMapper.queryManagerById(roles.get(i).getOperator()));
+			List<Permission> permissionList = permissionService.queryPermissionByRid(roles.get(i).getId());
+			roles.get(i).setPermissionList(permissionList);
+			roles.get(i).setOperatimestr(DateUtil.format(roles.get(i).getOperatime()));
+		}
+		page.setResults(roles);
+		return page;
+	}
+
+	@Override
+	public int removeRoleByIds(List<String> ids) {
+		return roleMapper.removeRoleByIds(ids);
+	}
+
+	
+}

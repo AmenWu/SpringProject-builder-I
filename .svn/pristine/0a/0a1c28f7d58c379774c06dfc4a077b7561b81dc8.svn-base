@@ -1,0 +1,18 @@
+package com.risenb.manage.service;
+
+import java.util.Date;
+
+public interface SysRunLogService {
+
+	/**
+	 * @param methodName
+	 * @param start
+	 * @param end
+	 * @param time
+	 * @param arguments
+	 * @param result
+	 */
+	void createSysRunLog(String methodName, Date start, Date end, long time, Object[] arguments, Object result);
+	
+
+}

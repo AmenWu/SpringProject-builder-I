@@ -1,0 +1,76 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ include file="../common/head.jsp" %>
+
+<body>
+        <div class="row l-row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins l-socll">
+                    <div class="ibox-content">
+			            <form action="<%=basePath%>manage/assignRole.im" open-type="doajax">
+			            <input type="hidden" value="${mid}" name="mid" id="mid" />
+			            <input type="hidden" value="" name="ids" id="ids" />
+							<div class="col-md-12">
+								<div class="form-group l-form-group-span">
+									<label class="col-sm-2 control-label">分配角色：</label>
+										<div class="col-sm-9">
+											  <c:forEach  var="list" items="${roleList}" >
+													<label class="checkbox-inline">
+													     <input type="checkbox" value="${list.id}" id="inlineCheckbox1" class="i-checks">
+													     <span>${list.rolename}</span>
+													</label>
+											  </c:forEach>
+										</div>
+								 </div>
+							</div>
+			        <div class="form-group l-form-group-button">
+			            <div class="row">
+			            	 <div class="col-sm-8">
+				                <button class="btn btn-primary"  id="subbutton" type="submit"  >保存</button>
+				                <button class="btn" type="button"  onclick="back()"  >返回</button>
+				             </div>
+			            </div>
+					</div>
+				</form>
+		   </div>
+         </div>
+      </div>
+   </div>
+</body>
+
+ <script>
+        $(document).ready(function () {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+       $("#subbutton").bind("click",function(){
+    	   chec();
+       })
+        function chec(){
+        	var ids = "";
+        	$(".i-checks").each(function(){
+				if($(this).is(':checked')){
+					ids += "," + $(this).val()
+				}        		
+        	})
+        	if(ids == ""){
+        		$("#ids").val("");
+        	}else{
+        		ids = ids.substring(1);
+        		$("#ids").val(ids);
+        	}
+        }
+        var existingRoleList = ${requestScope.existingRoleList};
+        for(var i in existingRoleList){
+        	$(".i-checks").each(function(){
+				if($(this).val() == existingRoleList[i].roleId){
+					$(this).attr('checked',true);
+				}        		
+        	})
+        }
+        chec();
+ </script>
+
+</html>

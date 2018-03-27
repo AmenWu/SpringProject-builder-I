@@ -1,0 +1,19 @@
+package com.risenb.manage.service;
+
+import java.util.List;
+
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Role;
+
+public interface RoleService {
+	
+	int createRole(Role record);  
+
+	Role queryRoleById(Integer id);   
+
+	int modifyRoleById(Role record);  
+
+	int removeRoleByIds(List<String> ids); 
+
+	Page<Role> roleListByPage(Page<Role> page);  
+}

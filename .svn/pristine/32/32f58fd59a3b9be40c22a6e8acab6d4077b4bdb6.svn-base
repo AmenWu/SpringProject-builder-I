@@ -1,0 +1,14 @@
+package com.risenb.manage.service;
+
+import java.util.List;
+
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.SysOpLog;
+
+public interface SysOpLogService {
+	
+	Page<SysOpLog> queryLogList(Page<SysOpLog> page);
+
+	int createLog(SysOpLog bs);
+
+}

@@ -1,0 +1,136 @@
+package com.risenb.controller.manage;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.annotation.Resource;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.risenb.base.BaseControllor;
+import com.risenb.bean.Result;
+import com.risenb.manage.bean.Permission;
+import com.risenb.manage.service.PermissionService;
+import com.risenb.util.JsonUtils;
+
+/**
+ * <p>
+ * Title:权限控制类
+ * </p>
+ * <p>
+ * Description:
+ * </p>
+ * 
+ * @version 1.0
+ */
+@Controller
+@RequestMapping("/permission")
+public class PermissionController extends BaseControllor {
+	
+	@Resource
+	PermissionService permissionService;
+	
+	/**
+	 * 权限列表
+	 * @param parentid
+	 * @return
+	 */
+	@RequestMapping("/permissionList")
+	public ModelAndView permissionList(@RequestParam(defaultValue = "1") Integer parentid) {
+		List<Permission> permissionList = permissionService.queryPermissionListHav();
+		List<Permission> permissionParentList = permissionService.queryPermissionByParentId(parentid);
+		String json = JsonUtils.objectToJson(permissionList);
+		request().setAttribute("ztreeJson", json);
+		return new ModelAndView("/manage/permission_manage").addObject("permissions", permissionList).addObject("menubodys", permissionParentList).addObject("parentid", parentid);
+	}
+
+	/**
+	 * 跳转到权限编辑页面
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("toSavePermissions")
+	public ModelAndView toSavePermissions(Integer id,Integer parentid) {
+		ModelAndView model = new ModelAndView("/manage/permission_save");
+		Permission permission = permissionService.queryPermissionById(id);
+		model.addObject("permission", permission);
+		model.addObject("parentid",parentid);
+		return model;
+	}
+	
+	/**
+	 * 权限列表响应数据
+	 * @param parentid
+	 */
+	@RequestMapping("/permissionListData")
+	public void permissionListData(Integer parentid){
+		List<Permission> permissionParentList = permissionService.queryPermissionByParentId(parentid);
+		returnJson(permissionParentList);
+	}
+
+	/**
+	 * 保存编辑
+	 * @param id
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping("/savePermissions")
+	public void updatePermissions(Integer id) throws IOException {
+		String title = getString("title");
+		String sort = getString("sort");
+		String parentid = getString("parentid");
+
+		System.out.println(id);
+		
+		System.out.println("fu:"+id);
+		
+		if(null == sort || "".equals(sort)){
+			sort="0";
+		}
+		String url = request().getParameter("url");
+		String ismenu = request().getParameter("ismenu");
+		if(null == ismenu || "".equals(ismenu)){
+			ismenu="0";
+		}
+
+		Permission permission = new Permission();
+		permission.setId(id);
+		permission.setUrl(url);
+		permission.setTitle(title);
+		permission.setIsmenu(Integer.valueOf(ismenu));
+		permission.setSort(Integer.parseInt(sort));
+		
+		int row = -1;
+		if(id != null){
+			row = permissionService.modifyPermissionById(permission);
+		}else{
+			permission.setParentid(Integer.parseInt(parentid));
+			row = permissionService.createPermission(permission);
+		}
+		if (row > 0) {
+			returnJson(Result.SUCCESS);
+		} else {
+			returnJson(Result.FAILURE);
+		}
+	}
+	
+	/**
+	 * 删除
+	 * @param id
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping("/del")
+	public void delPermissions(Integer id) throws IOException {
+		Permission permission = new Permission();
+		permission.setId(id);
+		if (permissionService.removePermissionById(id) > 0) {
+			returnJson(Result.SUCCESS);
+		} else {
+			returnJson(Result.FAILURE);
+		}
+	}
+
+}

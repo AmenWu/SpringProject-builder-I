@@ -1,0 +1,38 @@
+package com.risenb.manage.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Permission;
+
+@Repository
+public interface PermissionMapper {
+	
+    int removePermission(Permission record);
+    
+    int createPermission(Permission record);
+
+    Permission queryPermissionById(Integer id);
+
+    int modifyPermissionById(Permission record);
+    
+    List<Permission> queryPermissionPage(Page<Permission> page);
+
+    List<Permission> queryByManId(Integer manId);
+    
+    int createPermissionRole(Permission permission);
+
+    int modifyPermissionRoleById(Permission permission);
+
+    int removePermissionRole(Permission permission);
+
+	List<Permission> queryPermissionList(Permission permission);
+	
+	List<Permission> queryPermissionByRole(Permission permission);
+    
+	//批量新增角色权限关联
+	int batchCreatePermissionRole(@Param("manageId") Integer manageId, @Param("roleId") Integer roleId,@Param("pidList") List<String> pidList); 
+}

@@ -1,0 +1,9 @@
+2017-08-16 16:10:48 INFO org.springframework.context.support.ClassPathXmlApplicationContext line:578  - [main] Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@3930015a: startup date [Wed Aug 16 16:10:48 CST 2017]; root of context hierarchy
+2017-08-16 16:10:49 INFO org.springframework.beans.factory.xml.XmlBeanDefinitionReader line:317  - [main] Loading XML bean definitions from class path resource [applicationContext-db.xml]
+2017-08-16 16:10:49 INFO org.springframework.beans.factory.xml.XmlBeanDefinitionReader line:317  - [main] Loading XML bean definitions from class path resource [applicationContext-provider.xml]
+2017-08-16 16:10:50 INFO org.springframework.context.support.PropertySourcesPlaceholderConfigurer line:172  - [main] Loading properties file from class path resource [conn.properties]
+2017-08-16 16:10:51 INFO com.alibaba.druid.pool.DruidDataSource line:715  - [main] {dataSource-1} inited
+2017-08-16 16:10:51 INFO org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor line:165  - [main] Initializing ExecutorService  'threadPool'
+2017-08-16 16:10:53 INFO org.I0Itec.zkclient.ZkEventThread line:64  - [ZkClient-EventThread-23-192.168.0.106:2181] Starting ZkClient event thread.
+2017-08-16 16:10:53 INFO org.I0Itec.zkclient.ZkClient line:449  - [main-EventThread] zookeeper state changed (SyncConnected)
+2017-08-16 16:10:55 INFO com.risenb.main.Start line:39  - [main] System Started Successfully

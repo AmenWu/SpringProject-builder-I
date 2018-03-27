@@ -1,0 +1,63 @@
+/**
+ * 
+ */
+package com.risenb.initialize;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Component;
+
+import com.risenb.cache.CacheFactory;
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Permission;
+import com.risenb.manage.service.PermissionService;
+
+/**
+ * <pre>
+ * <p>Title: </p>
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2010 - 2016 </p>
+ * <p>Company: Beijing Risenb Technology Co.,Ltd. </p>
+ * <p>Build: 2017年8月14日 下午4:46:56 </p>
+ * </pre>
+ *
+ * @author Chang Yuxin
+ * @version 1.0
+ */
+@Component
+public class InitializePermission {
+
+	@Resource
+	private PermissionService permissionService;
+
+	/**
+	 * Initialize Permission List
+	 */
+	public void initPermission() {
+		Page<Permission> page = new Page<Permission>();
+		page.setIsPage(false);
+		page = permissionService.queryPermissionPage(page);
+		List<Permission> list = page.getResults();
+		for (Permission permission : list) {
+			CacheFactory.put("PERMISSION_CACHE", permission.getPermissionId(), permission);
+		}
+		Integer parentId = null;
+		for (Permission permission : list) {
+			parentId = permission.getParentId();
+			if (CacheFactory.contains("PERMISSION_CACHE", parentId)) {
+				((Permission) CacheFactory.get("PERMISSION_CACHE", parentId)).getChildren().add(permission);
+			}
+		}
+	}
+
+	/**
+	 * Refresh Permission
+	 */
+	public void refreshPermission() {
+		CacheFactory.clear("PERMISSION_CACHE");
+		initPermission();
+	}
+
+}

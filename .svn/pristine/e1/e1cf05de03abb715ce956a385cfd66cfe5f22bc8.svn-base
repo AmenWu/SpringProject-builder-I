@@ -1,0 +1,145 @@
+package com.risenb.aop;
+
+import java.lang.reflect.Method;
+import java.util.Date;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.apache.commons.lang3.time.StopWatch;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import com.alibaba.fastjson.JSON;
+import com.risenb.cache.CacheFactory;
+import com.risenb.constant.Constant;
+import com.risenb.manage.bean.Manager;
+import com.risenb.manage.bean.Permission;
+import com.risenb.manage.bean.SysLog;
+import com.risenb.manage.service.SysLogService;
+import com.risenb.util.StringUtil;
+
+public class MethodConsumeAdvice implements MethodInterceptor {
+
+	@Autowired
+	SysLogService sysLogService;
+
+	@Autowired
+	ThreadPoolTaskExecutor threadPool;
+
+	@Override
+	public Object invoke(MethodInvocation invocation) {
+		SysLog sysLog = getRequestInfo();
+		StopWatch clock = new StopWatch();
+		//请求状态
+		Integer status = 0;
+		// 返回结果
+		Object result = null;
+		//错误信息
+		String errorMsg = null;
+		clock.start();
+		Date start = new Date();
+		try {
+			result = invocation.proceed();
+		} catch (Throwable e) {
+			errorMsg = e.getMessage();
+			status = 1;
+		}
+		Date end = new Date();
+		clock.stop();
+		// 方法名
+		LogerAnnotation annotation = invocation.getMethod().getAnnotation(LogerAnnotation.class);
+		if (null == annotation || annotation.isLog()) {
+			
+			// 获取完成方法名
+			Method method = invocation.getMethod();
+			String className = method.getDeclaringClass().getName();
+			String methodName = method.getName();
+			methodName = className + "." + methodName;
+			// 请求参数
+			//Object[] arguments = invocation.getArguments();
+			// 执行时间 单位毫秒
+			Long time = clock.getTime();
+			String rslt = null;
+			//String args = null;
+			try {
+				//args = JSON.toJSONString(arguments);
+				rslt = JSON.toJSONString(result);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+			}
+			Integer manageId = sysLog.getManageId();
+			if(null == manageId){
+				ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+				HttpServletRequest request = servletRequestAttributes.getRequest();
+				if (null != request) {
+					HttpSession session = request.getSession();
+					if (null != session) {
+						Manager sessionManager = (Manager) session.getAttribute(Constant.SESSION_MANAGER);
+						if (null != sessionManager) {
+							manageId = sessionManager.getManageId();
+							sysLog.setManageId(manageId);
+						}
+					}
+				}
+			}
+			sysLog.setMethodName(methodName);
+			sysLog.setStartTime(start);
+			sysLog.setEndTime(end);
+			sysLog.setConsum(time.intValue());
+			//sysLog.setArgs(args);
+			sysLog.setResult(rslt);
+			sysLog.setLogId(StringUtil.getUUID());
+			sysLog.setStatus(status);
+			sysLogService.createSysLog(sysLog);
+		}
+		if (1 == status) {
+			throw new RuntimeException(errorMsg);
+		}
+		return result;
+	}
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	SysLog getRequestInfo(){
+		ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		HttpServletRequest request = servletRequestAttributes.getRequest();
+		SysLog sysLog = new SysLog();
+		// 访问路径
+		String path = "";
+		//访问参数
+		String args ="";
+		// 管理员id
+		Integer manageId = null;
+		// 权限id
+		Integer permissionId = null;
+		if (null != request) {
+			path = request.getServletPath();
+			path = path.substring(1);
+			Permission permission = (Permission) CacheFactory.get("PERMISSION_URL_CACHE", path);
+			if (null != permission) {
+				permissionId = permission.getPermissionId();
+			}
+			HttpSession session = request.getSession();
+			if (null != session) {
+				Manager sessionManager = (Manager) session.getAttribute(Constant.SESSION_MANAGER);
+				if (null != sessionManager) {
+					manageId = sessionManager.getManageId();
+				}
+			}
+			Map<String, String[]> parameterMap = request.getParameterMap();
+			args = JSON.toJSONString(parameterMap);
+		}
+		sysLog.setManageId(manageId);
+		sysLog.setPermissionId(permissionId);
+		sysLog.setArgs(args);
+		return sysLog;
+	}
+}

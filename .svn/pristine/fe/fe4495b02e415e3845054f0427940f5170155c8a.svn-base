@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.risenb.manage.dao.RoleMapper" >
+
+	<sql id="role_Column_List" >
+	  	  id, role_name, parent_id, status, operator, opera_time
+	</sql>
+  
+	<select id="queryRoleById" resultType="com.risenb.manage.bean.Role" parameterType="java.lang.Integer" >
+		  select 
+		  <include refid="role_Column_List" />
+		  from sys_role
+		  where id = #{id,jdbcType=INTEGER}
+	</select>
+  
+  	<select id="roleListByPage" resultType="com.risenb.manage.bean.Role" parameterType="com.risenb.manage.bean.Page">
+	     select 
+	     <include refid="role_Column_List" />
+	     from sys_role
+	     where 1=1
+	     <if test="params.rolename != null" >
+	    	   and role_name like  CONCAT('%','${params.rolename}','%' )
+	     </if>
+	     <if test="params.parentid != null" >
+	   	 	   and  parent_id = #{params.parentid}
+	     </if>
+	     <if test="params.status != null" >
+	   		   and  status = #{params.status}
+	     </if>
+	     <if test="params.operator != null" >
+	   		   and  operator = #{params.operator}
+	     </if>
+	     <if test="params.operatime != null" >
+	           and  opera_time = #{params.operatime}
+	     </if>
+	 </select>
+  
+  
+  
+	<delete id="removeRoleByIds" parameterType="java.util.List">
+	  	delete from sys_role where id in 
+	  	<foreach collection="list" item="id" open="(" separator="," close=")">
+	  		#{id}
+	  	</foreach>
+	</delete>
+  
+	<insert id="createRole" parameterType="com.risenb.manage.bean.Role"  useGeneratedKeys="true" keyProperty="id">
+		    insert into sys_role
+		    <trim prefix="(" suffix=")" suffixOverrides="," >
+		      id,
+		      <if test="rolename != null" >
+		        role_name,
+		      </if>
+		      <if test="parentid != null" >
+		        parent_id,
+		      </if>
+		      <if test="status != null" >
+		        status,
+		      </if>
+		      <if test="operator != null" >
+		        operator,
+		      </if>
+		      <if test="operatime != null" >
+		        opera_time,
+		      </if>
+		    </trim>
+		    <trim prefix="values (" suffix=")" suffixOverrides="," >
+		      #{id,jdbcType=INTEGER},
+		      <if test="rolename != null" >
+		        #{rolename,jdbcType=VARCHAR},
+		      </if>
+		      <if test="parentid != null" >
+		        #{parentid,jdbcType=INTEGER},
+		      </if>
+		      <if test="status != null" >
+		        #{status,jdbcType=INTEGER},
+		      </if>
+		      <if test="operator != null" >
+		        #{operator,jdbcType=INTEGER},
+		      </if>
+		      <if test="operatime != null" >
+		        #{operatime,jdbcType=TIMESTAMP},
+		      </if>
+		    </trim>
+	</insert>
+  
+	<update id="modifyRoleById" parameterType="com.risenb.manage.bean.Role" >
+		    update sys_role
+		    <set >
+		      <if test="rolename != null" >
+		        role_name = #{rolename,jdbcType=VARCHAR},
+		      </if>
+		      <if test="parentid != null" >
+		        parent_id = #{parentid,jdbcType=INTEGER},
+		      </if>
+		      <if test="status != null" >
+		        status = #{status,jdbcType=INTEGER},
+		      </if>
+		      <if test="operator != null" >
+		        operator = #{operator,jdbcType=INTEGER},
+		      </if>
+		      <if test="operatime != null" >
+		        opera_time = #{operatime,jdbcType=TIMESTAMP},
+		      </if>
+		    </set>
+		    where id = #{id,jdbcType=INTEGER}
+	</update>
+  
+</mapper>

@@ -1,0 +1,49 @@
+package com.risenb.constant;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.context.ApplicationContext;
+
+public class Constant {
+	// 验证码有效时间10分
+	public final static int MINUTE = 10;
+	// 每页显示条数
+	public static final String PAGESIZE = "10";
+	public static final String COOKIE_USER_NAME="useremail";
+	public static final String SESSION_SECURITY_CODE = "sessionSecCode";
+	public static final String SESSION_USER = "sessionUser";
+	// PC用户端session
+	public static final String SESSION_CLIENT_USER = "clientuser";
+	public static final String SESSION_CLIENT_CUSTOMER = "customeruser";
+	public static final String SESSION_MANAGER = "sessionManager";
+	public static final String SESSION_MANAGER_PERMISSIONLIST = "sessionPermission";
+	public static final String NO_INTERCEPTOR_PATH_MANAGE = ".*/((login/login)|(login/toLogin)|(login/logout)|(home/index)|(upload/file)|(error/authority)|(login/head)|(error/notFound)|(error/innerError)|(manage/toCpPassword)|(manage/cp)|(home/welcome)|(file_upload)|(error/ajaxAuthority)|(permission/ajaxPermissionListData)).*";	//不对匹配该值的访问路径拦截（正则）後台
+	public static final String NO_INTERCEPTOR_PATH_client = ".*/((redirect)|(city)|(county)|(home/home)).*";	//不对匹配该值的访问路径拦截（正则）前台
+	public static final String NO_INTERCEPTOR_PAGE = ".*/((client/index)).*";	//不对匹配该值的访问路径拦截（正则）前台
+	public static final String CHECK_CODE = "checkcode";
+	public static final String CLIENT_CHECK_CODE = "clientcheckcode";
+	public static final String NO_INTERCEPTOR_PATH = ".*/((login)|(logout)|(code)).*";	//不对匹配该值的访问路径拦截（正则）後台
+	public static ApplicationContext WEB_APP_CONTEXT = null; //该值会在web容器启动时由WebAppContextListener初始化
+	public static ServletContext SERVLET_CONTEXT = null;
+	public static final String ManagerName = "系统管理员";//系统管理员名称
+	public static final int ManagerId = 1;//系统管理员ID
+	/** 
+	 * 用户和Session绑定关系 
+	 */  
+	public static final Map<String, HttpSession> USER_SESSION = new HashMap<String, HttpSession>();
+	
+	/** 
+	 * seeionId和用户的绑定关系 
+	 */  
+	public static final Map<String, String> SESSIONID_USER=new HashMap<String, String>();
+	// 默认头像
+	public static final String HEADIMG = "/client/imgs/g_55.png";
+	
+	public static String UPLOADDIRECTORY="D:/apache-tomcat-8.0.35/webapps/risenb-manager-web/";//上传返回的目录
+	public static String HOST="http://localhost:8080";//上传返回的目录
+	
+}

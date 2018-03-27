@@ -1,0 +1,185 @@
+package com.risenb.controller.manage;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.risenb.base.BaseControllor;
+import com.risenb.bean.Result;
+import com.risenb.constant.Constant;
+import com.risenb.manage.bean.Manager;
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Permission;
+import com.risenb.manage.bean.Role;
+import com.risenb.manage.service.PermissionService;
+import com.risenb.manage.service.RoleService;
+import com.risenb.util.JsonUtils;
+
+/**
+ * <p>
+ * Title:角色控制类
+ * </p>
+ * <p>
+ * Description:
+ * </p>
+ * 
+ * @version 1.0
+ */
+@Controller
+@RequestMapping("role")
+public class RoleController extends BaseControllor {
+	
+	@Resource
+	RoleService roleService;
+	
+	@Resource
+	PermissionService permissionService;
+	
+	/**
+	 * 角色列表
+	 * @param role
+	 * @return
+	 */
+	@RequestMapping("roleList")
+	public ModelAndView roleListByPage(@RequestParam Map<String, Object> params,Integer pageSize,Integer pageCurrent) {
+		ModelAndView mv = new ModelAndView("manage/role_manage");
+		Page<Role> page  = new Page<Role>().setPageNo(pageCurrent == null ? 1 : pageCurrent).setPageSize(pageSize == null ? 15 : pageSize)
+				.setParams(params);
+		page = roleService.roleListByPage(page);
+		mv.addObject("page", page);
+		request().setAttribute("params", params);
+		return mv;
+	}
+
+	/**
+	 * 跳转到角色编辑页面
+	 * @param rid
+	 * @return
+	 */
+	@RequestMapping(value = "toSaveRole")
+	public ModelAndView toSaveRole(Integer rid) {
+		ModelAndView mv = new ModelAndView("manage/role_save");
+		if (rid != null) {
+			Role role = roleService.queryRoleById(rid);
+			mv.addObject("role", role);
+			List<Permission> permissionList = role.getPermissionList();   
+			String psid = "";
+			String psname = "";
+			for (int i = 0; i < permissionList.size(); i++) {
+				if (permissionList.get(i).getPermission() != null) {
+					psid += permissionList.get(i).getPermission().getId() + ",";
+					psname += permissionList.get(i).getPermission().getTitle() + ",";
+				}
+			}
+			if (psid.length() > 0) {
+				psid = psid.substring(0, psid.length() - 1);
+				psname = psname.substring(0, psname.length() - 1);
+			}
+			mv.addObject("psid", psid);
+			mv.addObject("psname", psname);
+		}
+		Permission permission = new Permission();
+		List<Permission> permissionList = permissionService.queryPermissionList(permission);
+		mv.addObject("ps", permissionList);  
+		String json = JsonUtils.objectToJson(permissionList);
+		mv.addObject("ztreeJson",json);
+		return mv;
+	}
+	
+
+	/**
+	 * 编辑角色
+	 * @param role
+	 * @param pids
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "saveRole")
+	public void saveRole(@RequestBody @ModelAttribute Role role, String pids)throws IOException {
+		Manager manager = (Manager) session().getAttribute(Constant.SESSION_MANAGER);
+		int row = 0;
+		role.setOperator(((Manager) session().getAttribute(Constant.SESSION_MANAGER)).getId());
+		role.setOperatime(new Date());
+		if (role.getId() != null) {
+			row = roleService.modifyRoleById(role);
+		} else {
+			row = roleService.createRole(role);
+		}
+		if (row > 0) {
+			permissionService.removePermissionRoleByRoleId(role.getId());
+			String[] pid = pids.split(",");  
+			for (int i = 0; i < pid.length; i++) {
+				if (!StringUtils.isBlank(pid[i])) {
+					Permission pr = new Permission();
+					pr.setOperator(manager.getId());
+					pr.setOperatime(new Date());
+					pr.setPermissionid(Integer.parseInt(pid[i]));
+					pr.setRoleid(role.getId());
+					permissionService.createPermissionRole(pr);
+				}
+			}
+			returnJson(Result.SUCCESS);
+		} else {
+			returnJson(Result.FAILURE);
+		}
+	}
+
+	/**
+	 * 冻结角色
+	 * @param rid
+	 */
+	@RequestMapping(value = "frozen")
+	public void frozen(Integer rid) {
+			int row = 0;
+			Role role = roleService.queryRoleById(rid);
+			role.setOperator(((Manager) session().getAttribute(Constant.SESSION_MANAGER)).getId());
+			role.setOperatime(new Date());
+			if (role.getStatus() == null || role.getStatus() == 1) {
+				role.setStatus(0);
+			} else {
+				role.setStatus(1);
+			}
+			row = roleService.modifyRoleById(role);
+			if (row > 0) {
+				returnJson(Result.SUCCESS);
+			} else {
+				returnJson(Result.FAILURE);
+			}
+	}
+
+	/**
+	 * 删除角色
+	 * @param ids
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "del")
+	public void deleteRole(String ids,String rid) throws IOException {
+		int row = 0;
+		List<String> list = new ArrayList<String>();
+		if(!StringUtils.isBlank(rid)){
+			list.add(rid);
+			row = roleService.removeRoleByIds(list);
+		}else if(!StringUtils.isBlank(ids)){
+		    list = Arrays.asList(ids.split(","));
+		    row = roleService.removeRoleByIds(list);
+		}
+		if (row > 0) {
+			returnJson(Result.SUCCESS);
+		} else {
+			returnJson(Result.FAILURE);
+		}
+	}
+
+}

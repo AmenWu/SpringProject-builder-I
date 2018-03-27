@@ -1,0 +1,96 @@
+package com.risenb.manage.service;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.risenb.manage.bean.Permission;
+import com.risenb.manage.dao.PermissionMapper;
+import com.risenb.util.DateUtil;
+
+@Service(value = "permissionService")
+public class PermissionServiceImpl implements PermissionService {
+	
+	@Autowired
+	PermissionMapper permissionMapper;
+	
+	@Override
+	public List<Permission> queryPermissionList() {
+		List<Permission> permissionList = permissionMapper.queryPermissionList();
+		for (Permission permission : permissionList) {
+			permission.setShowOperatime(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm"));
+		}
+		return permissionList;
+	}
+	
+	@Override
+	public List<Permission> queryPermissionListHav() {
+		List<Permission> permissionList = permissionMapper.queryPermissionListHav();
+		for (Permission permission : permissionList) {
+			permission.setShowOperatime(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm"));
+		}
+		return permissionList;
+	}
+	@Override
+	public int removePermissionById(Integer id) {
+		int perNum = 0;
+		//根据parentID查询是否有子列表
+		List<Permission> perList = permissionMapper.queryPermissionByParentId(id);
+		if (null != perList && perList.size() > 0) {
+			int num = permissionMapper.deletePermissionByParentId(id);
+			if (num > 0) {
+				perNum = permissionMapper.removePermissionById(id);
+			}
+		} else {
+			perNum = permissionMapper.removePermissionById(id);
+		}
+		return perNum;
+	}
+	@Override
+	public int createPermission(Permission permission) {
+		return permissionMapper.createPermission(permission);
+	}
+	
+	@Override
+	public Permission queryPermissionById(Integer id) {
+		return permissionMapper.queryPermissionById(id);
+	}
+	@Override
+	public int modifyPermissionById(Permission permission) {
+		return permissionMapper.modifyPermissionById(permission);
+	}
+	
+	@Override
+	public List<Permission> queryPermissionByParentId(Integer parentid) {
+		List<Permission> parentPermissionList = permissionMapper.queryPermissionByParentId(parentid);
+		for (Permission permission : parentPermissionList) {
+			permission.setShowOperatime(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm"));
+		}
+		return parentPermissionList;
+	}
+	@Override
+	public List<Permission> queryPermissionListById(Integer manId) {
+		return permissionMapper.queryByManId(manId);
+	} 
+	
+	//fgiwefew
+	public List<Permission> queryPermissionByRid(Integer roleId) {
+		List<Permission> permissionList = permissionMapper.queryPermissionByRid(roleId);
+		for (int i = 0; i < permissionList.size(); i++) {
+			Permission p = permissionMapper.queryPermissionById(permissionList.get(i).getPermissionid());
+			permissionList.get(i).setPermission(p);
+		}
+		return permissionList;
+	}
+	
+	public int removePermissionRoleByRoleId(Integer roleid) {
+		return permissionMapper.removePermissionRoleByRoleId(roleid);
+	}
+	
+	public int createPermissionRole(Permission permission) {
+		return permissionMapper.createPermissionRole(permission);
+	}
+
+}

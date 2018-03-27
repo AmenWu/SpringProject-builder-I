@@ -1,0 +1,9 @@
+2017-05-31 13:46:33 INFO org.springframework.context.support.ClassPathXmlApplicationContext line:578  - [main] Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@3339ad8e: startup date [Wed May 31 13:46:33 GMT+08:00 2017]; root of context hierarchy
+2017-05-31 13:46:34 INFO org.springframework.beans.factory.xml.XmlBeanDefinitionReader line:317  - [main] Loading XML bean definitions from class path resource [applicationContext-db.xml]
+2017-05-31 13:46:34 INFO org.springframework.beans.factory.xml.XmlBeanDefinitionReader line:317  - [main] Loading XML bean definitions from class path resource [applicationContext-provider.xml]
+2017-05-31 14:09:38 INFO org.springframework.context.support.ClassPathXmlApplicationContext line:578  - [main] Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@3339ad8e: startup date [Wed May 31 14:09:38 GMT+08:00 2017]; root of context hierarchy
+2017-05-31 14:09:38 INFO org.springframework.beans.factory.xml.XmlBeanDefinitionReader line:317  - [main] Loading XML bean definitions from class path resource [applicationContext-db.xml]
+2017-05-31 14:09:39 INFO org.springframework.beans.factory.xml.XmlBeanDefinitionReader line:317  - [main] Loading XML bean definitions from class path resource [applicationContext-provider.xml]
+2017-05-31 14:09:44 INFO org.springframework.context.support.ClassPathXmlApplicationContext line:578  - [main] Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@3339ad8e: startup date [Wed May 31 14:09:44 GMT+08:00 2017]; root of context hierarchy
+2017-05-31 14:09:44 INFO org.springframework.beans.factory.xml.XmlBeanDefinitionReader line:317  - [main] Loading XML bean definitions from class path resource [applicationContext-db.xml]
+2017-05-31 14:09:44 INFO org.springframework.beans.factory.xml.XmlBeanDefinitionReader line:317  - [main] Loading XML bean definitions from class path resource [applicationContext-provider.xml]

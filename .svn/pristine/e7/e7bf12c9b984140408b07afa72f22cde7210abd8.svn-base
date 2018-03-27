@@ -1,0 +1,43 @@
+package com.risenb.manage.service;
+
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.risenb.aop.LogerAnnotation;
+import com.risenb.manage.bean.SysRunLog;
+import com.risenb.manage.dao.SysRunLogMapper;
+import com.risenb.util.StringUtil;
+
+@Service("sysLogService")
+public class SysRunLogServiceImpl implements SysRunLogService {
+	@Autowired
+	SysRunLogMapper sysRunLogMapper;
+	@Autowired
+	ThreadPoolTaskExecutor threadPool;
+
+	@Override
+	@LogerAnnotation(isLog = false)
+	public void createSysRunLog(String methodName, Date start, Date end, long time, Object[] arguments, Object result) {
+		threadPool.execute(new Runnable() {
+			public void run() {
+				String argumentsStr = JSON.toJSONString(arguments);
+				String resultStr = JSON.toJSONString(result);
+				SysRunLog sysRunLog = new SysRunLog();
+				sysRunLog.setLogId(StringUtil.getUUID());
+				sysRunLog.setMethodName(methodName);
+				sysRunLog.setStartTime(start);
+				sysRunLog.setEndTime(end);
+				sysRunLog.setConsum(time);
+				sysRunLog.setArgs(argumentsStr);
+				sysRunLog.setResult(resultStr);
+				sysRunLog.setCreateTime(new Date());
+				sysRunLogMapper.createSysRunLog(sysRunLog);
+			}
+		});
+	}
+
+}

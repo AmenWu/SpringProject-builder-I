@@ -1,0 +1,192 @@
+package com.risenb.util;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.HttpClientUtils;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.joda.time.DateTime;
+
+public class WebClient {
+	
+	/**
+	 * <pre>
+	 * 	发送带参数的POST的HTTP请求
+	 * </pre>
+	 * 
+	 * @param reqUrl
+	 *            HTTP请求URL
+	 * @param parameters
+	 *            参数映射表
+	 * @return HTTP响应的字符串
+	 */
+	public static String doPost(String reqUrl, Map<String, String> parameters,
+			String recvEncoding) throws Exception{
+		HttpClient client=HttpClients.createDefault();
+		HttpPost post=new HttpPost(reqUrl);
+		List<NameValuePair> nvps=new ArrayList<NameValuePair>();
+		Iterator<Entry<String, String>> iterator=parameters.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<String, String> entry=iterator.next();
+			nvps.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+		}
+		post.setEntity(new UrlEncodedFormEntity(nvps,recvEncoding));
+		CloseableHttpResponse response=(CloseableHttpResponse)client.execute(post);
+		HttpEntity clientEntity=response.getEntity();
+		BufferedReader reader=new BufferedReader(new InputStreamReader(clientEntity.getContent()));
+		String lines;
+		StringBuilder sb=new StringBuilder();
+		while ((lines = reader.readLine()) != null) {
+			sb.append("\n" + lines);
+		}
+		HttpClientUtils.closeQuietly(response);
+		HttpClientUtils.closeQuietly(client);
+		return sb.toString();
+	}
+	
+	/**
+	 * 发送带参数和头部的POST的HTTP请求
+	 * @param reqUrl  HTTP请求URL
+	 * @param parameters  请求的参数
+	 * @param recvEncoding  字符编码
+	 * @param headers   头部信息
+	 * @return
+	 * @throws Exception
+	 */
+	public static String doPost(String reqUrl, Map<String, String> parameters,
+			String recvEncoding, HashMap<String, String> headers) throws Exception {
+		HttpClient client = HttpClients.createDefault();
+		HttpPost post = new HttpPost(reqUrl);
+		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+		Iterator<Entry<String, String>> iterator = parameters.entrySet().iterator();
+		
+		while (iterator.hasNext()) {
+			Entry<String, String> entry = iterator.next();
+			nvps.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+		}
+		
+		post.setEntity(new UrlEncodedFormEntity(nvps,recvEncoding));
+		
+		if (!headers.isEmpty()) {
+			for (String key : headers.keySet()) {
+				post.setHeader(key, headers.get(key));
+			}
+		}
+		
+		CloseableHttpResponse response = (CloseableHttpResponse) client.execute(post);
+		HttpEntity clientEntity = response.getEntity();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(clientEntity.getContent()));
+		String lines;
+		StringBuilder sb = new StringBuilder();
+		
+		while ((lines = reader.readLine()) != null) {
+			sb.append("\n" + lines);
+		}
+		
+		HttpClientUtils.closeQuietly(response);
+		HttpClientUtils.closeQuietly(client);
+		return sb.toString().trim();
+	}
+
+	/**
+	 * 通过get来访问url
+	 * 
+	 * @param src
+	 *            需要访问的url
+	 * @return
+	 * @throws Exception
+	 */
+	public static String doGet(String src) throws Exception {
+		return doGet(src, "utf-8");
+	}
+
+	/**
+	 * 通过get来访问url
+	 * 
+	 * @param src
+	 *            需要访问的地址
+	 * @param outputencode
+	 *            获取输出时的编码
+	 * @return
+	 * @throws Exception
+	 */
+	public static String doGet(String src, String outputencode)
+			throws Exception {
+		return doGet(src, outputencode, null);
+	}
+
+	/**
+	 * 通过get来访问url
+	 * 
+	 * @param src
+	 *            需要访问的地址
+	 * @param outputencode
+	 *            获取输出时的编码
+	 * @param headers
+	 *            需要添加的访问头信息
+	 * @return
+	 * @throws Exception
+	 */
+	public static String doGet(String src, String outputencode,
+			HashMap<String, String> headers) throws Exception {
+		StringBuffer result = new StringBuffer();
+		URL url = new URL(src);
+		URLConnection connection = url.openConnection();
+		BufferedReader in = null;
+		try {
+			if (headers != null) {
+				Iterator<String> iterators = headers.keySet().iterator();
+				while (iterators.hasNext()) {
+					String key = iterators.next();
+					connection.setRequestProperty(key, headers.get(key));
+				}
+			}
+			connection.connect();
+			in = new BufferedReader(new InputStreamReader(
+					connection.getInputStream(), outputencode));
+			String line;
+			while ((line = in.readLine()) != null) {
+				result.append("\n" + line);
+			}
+			return result.toString().trim();
+		} catch (Exception ex) {
+			throw ex;
+		} finally {
+			if (in != null) {
+				in.close();
+			}
+		}
+
+	}
+	
+	public static void main(String[] args) throws Exception {
+		Map<String, String> parameters = new HashMap<String, String>();
+		parameters.put("appver", "1");
+		parameters.put("timestamp", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+		parameters.put("user", "4006191448_dev");
+		System.out.println(DateTime.now().toDate());
+		//String secret = TelephoneUtil.secretToRequest(parameters, "s05bse6q2qlb9qblls96s592y55y556s");
+		//System.out.println(secret);
+		//parameters.put("secret", secret);
+		//System.out.println(new WebClient().doPost("http://xtapi.union400.com/api/union400Login.action", parameters , "utf-8"));
+		//System.out.println(new WebClient().doGet("http://xtapi.union400.com/api/union400Login.action", "utf-8"));
+	}
+
+}

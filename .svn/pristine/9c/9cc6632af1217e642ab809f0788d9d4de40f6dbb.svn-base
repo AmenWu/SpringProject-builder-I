@@ -1,0 +1,111 @@
+package com.risenb.manage.bean;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+
+public class Role implements Serializable {
+    
+	private static final long serialVersionUID = -2271843122835358614L;
+
+	private Integer id;
+
+    private String rolename;
+
+    private Integer parentid;
+
+    private Integer status;
+
+    private Integer moduleid;
+
+    private Integer operator;
+
+    private Date operatime;
+    
+    private Manager operatorManage;
+
+    private String operatimestr;
+    
+    private List<Permission> permissionList;
+    
+	public Manager getOperatorManage() {
+		return operatorManage;
+	}
+
+	public void setOperatorManage(Manager operatorManage) {
+		this.operatorManage = operatorManage;
+	}
+
+	public List<Permission> getPermissionList() {
+		return permissionList;
+	}
+
+	public void setPermissionList(List<Permission> permissionList) {
+		this.permissionList = permissionList;
+	}
+
+	public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    
+    public String getOperatimestr() {
+		return operatimestr;
+	}
+
+	public void setOperatimestr(String operatimestr) {
+		this.operatimestr = operatimestr;
+	}
+
+	public String getRolename() {
+        return rolename;
+    }
+
+    public void setRolename(String rolename) {
+        this.rolename = rolename == null ? null : rolename.trim();
+    }
+
+    public Integer getParentid() {
+        return parentid;
+    }
+
+    public void setParentid(Integer parentid) {
+        this.parentid = parentid;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public Role setStatus(Integer status) {
+        this.status = status;
+        return this;
+    }
+
+    public Integer getModuleid() {
+        return moduleid;
+    }
+
+    public void setModuleid(Integer moduleid) {
+        this.moduleid = moduleid;
+    }
+
+    public Integer getOperator() {
+        return operator;
+    }
+
+    public void setOperator(Integer operator) {
+        this.operator = operator;
+    }
+
+    public Date getOperatime() {
+        return operatime;
+    }
+
+    public void setOperatime(Date operatime) {
+        this.operatime = operatime;
+    }
+}

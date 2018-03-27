@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.risenb.manage.dao.SysLogMapper">
+  <sql id="Base_Column_List">
+    log_id, method_name, manage_id, permission_id, start_time, end_time, consum, status, create_time
+  </sql>
+  <sql id="Blob_Column_List">
+    args, result
+  </sql>
+  
+  <!-- 新增日志记录-->
+  <insert id="insert" parameterType="com.risenb.manage.bean.SysLog">
+	insert into sys_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="logId != null">
+				log_id,
+			</if>
+			<if test="methodName != null">
+				method_name,
+			</if>
+			<if test="manageId != null">
+				manage_id,
+			</if>
+			<if test="permissionId != null">
+				permission_id,
+			</if>
+			<if test="startTime != null">
+				start_time,
+			</if>
+			<if test="endTime != null">
+				end_time,
+			</if>
+			<if test="consum != null">
+				consum,
+			</if>
+			<if test="args != null">
+				args,
+			</if>
+			<if test="result != null">
+				result,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="logId != null">
+				#{logId,jdbcType=VARCHAR},
+			</if>
+			<if test="methodName != null">
+				#{methodName,jdbcType=VARCHAR},
+			</if>
+			<if test="manageId != null">
+				#{manageId,jdbcType=INTEGER},
+			</if>
+			<if test="permissionId != null">
+				#{permissionId,jdbcType=INTEGER},
+			</if>
+			<if test="startTime != null">
+				#{startTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endTime != null">
+				#{endTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="consum != null">
+				#{consum,jdbcType=INTEGER},
+			</if>
+			<if test="args != null">
+				#{args,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="result != null">
+				#{result,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<sql id="sl_Base_Column_List">
+        sl.log_id,sl.manage_id, sl.permission_id, sl.status, sl.create_time,sl.start_time, sl.end_time, sl.consum,sl.method_name
+    </sql>
+	<!-- 查询操作日志列表 -->
+	<select id="getListByPage" resultType="com.risenb.manage.bean.SysLog" parameterType="com.risenb.bean.Page">
+		select 
+		 	 <include refid="sl_Base_Column_List" />,sm.username operator,sp.title operaModule
+		from 
+			sys_log sl
+		left join 
+			sys_manager sm
+		on 
+			sl.manage_id = sm.manage_id
+		left join
+			sys_permission sp
+		on 
+			sl.permission_id = sp.permission_id
+		<where>
+		  	<if test="params.startTime != null and params.startTime != '' ">
+    			and 
+    				date_format(sl.create_time,"%Y-%m-%d") <![CDATA[ >= ]]> date_format(#{params.startTime},"%Y-%m-%d") 
+    	    </if>
+    	   <if test="params.endTime != null and params.endTime != '' ">
+    			and 
+    				date_format(sl.create_time,"%Y-%m-%d") <![CDATA[ <= ]]> date_format(#{params.endTime},"%Y-%m-%d") 
+    	    </if>
+		</where>
+		order by 
+			sl.create_time desc
+	</select>
+	
+	<!-- 查询操作日志详情 -->
+	<select id="getById" resultType="com.risenb.manage.bean.SysLog" parameterType="java.lang.Integer">
+		select 
+		 	 <include refid="sl_Base_Column_List" />,sl.args,sl.result,sm.username operator,sp.title operaModule
+		from 
+			sys_log sl
+		left join 
+			sys_manager sm
+		on 
+			sl.manage_id = sm.manage_id
+		left join
+			sys_permission sp
+		on 
+			sl.permission_id = sp.permission_id
+		<where>
+		  	<if test="logId != null and logId != '' ">
+    			and 
+    				log_id = #{logId}
+    	    </if>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,63 @@
+package com.risenb.initialize;
+
+import java.util.List;
+import javax.annotation.Resource;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
+import com.risenb.cache.CacheFactory;
+import com.risenb.manage.bean.Page;
+import com.risenb.manage.bean.Permission;
+import com.risenb.manage.service.PermissionService;
+
+/**
+ * <pre>
+ * <p>Title: Spring容器加载完毕，需要做一些操作。</p>
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2010 - 2016 </p>
+ * <p>Company: Beijing Risenb Technology Co.,Ltd. </p>
+ * <p>Build: 2017年6月20日 上午10:43:17 </p>
+ * </pre>
+ *
+ * @author Chang Yuxin
+ * @version 1.0
+ */
+@Component
+public class InitializeProcessor implements ApplicationListener<ContextRefreshedEvent> {
+
+	@Resource
+	private PermissionService permissionService;
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		if (event.getApplicationContext().getDisplayName().equals("Root WebApplicationContext")) {
+			// InitPermission
+			initPermission();
+			
+
+		}
+	}
+
+	/**
+	 * InitPermission
+	 */
+	private void initPermission() {
+		Page<Permission> page = new Page<Permission>();
+		page.setIsPage(false);
+		page = permissionService.queryPermissionPage(page);
+		List<Permission> list = page.getResults();
+		for (Permission permission : list) {
+			CacheFactory.PERMISSION_CACHE.put(permission.getPermissionId(), permission);
+		}
+		Integer parentId = null;
+		for (Permission permission : list) {
+			parentId = permission.getParentId();
+			if (CacheFactory.PERMISSION_CACHE.containsKey(parentId)) {
+				CacheFactory.PERMISSION_CACHE.get(parentId).getChildren().add(permission);
+			} else {
+				CacheFactory.PERMISSION_CACHE.put(permission.getPermissionId(), permission);
+			}
+		}
+	}
+
+}

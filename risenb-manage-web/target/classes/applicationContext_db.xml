@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+        http://www.springframework.org/schema/context    
+        http://www.springframework.org/schema/context/spring-context-4.2.xsd    
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+		">
+	
+	<!-- 加载jdbc.properties文件的配置
+	<context:property-placeholder location="classpath:conn.properties" />
+	 -->
+	<!-- 引入配置文件 -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:conn.properties" />
+	</bean>
+
+	<!-- 加载属性文件 -->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>system-config</value>
+				<value>conn</value>
+			</list>
+		</property>
+	</bean>
+		
+	<!--异步线程池 -->
+	<bean id="threadPool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<!-- 核心线程数 -->
+		<property name="corePoolSize" value="50" />
+		<!-- 最大线程数 -->
+		<property name="maxPoolSize" value="50" />
+		<!-- 队列最大长度 >=mainExecutor.maxSize -->
+		<property name="queueCapacity" value="1000" />
+		<!-- 线程池维护线程所允许的空闲时间 -->
+		<property name="keepAliveSeconds" value="300" />
+		<!-- 线程池对拒绝任务(无线程可用)的处理策略 -->
+		<property name="rejectedExecutionHandler">
+			<!-- 默认策略 处理程序遭到拒绝将抛出运行时 RejectedExecutionException -->
+			<!-- <bean class="java.util.concurrent.ThreadPoolExecutor$AbortPolicy" /> -->
+			<!--调用者的线程会执行该任务,如果执行器已关闭,则丢弃 -->
+			<bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />
+			<!--不能执行的任务将被丢弃 -->
+			<!-- <bean class="java.util.concurrent.ThreadPoolExecutor$DiscardPolicy" /> -->
+			<!-- 如果执行程序尚未关闭，则位于工作队列头部的任务将被删除，然后重试执行程序（如果再次失败，则重复此过程）. -->
+			<!--<bean class="java.util.concurrent.ThreadPoolExecutor$DiscardOldestPolicy" /> -->
+		</property>
+	</bean>  
+		<!-- 日志切面 -->
+	<bean id="methodInterceptor" class="com.risenb.aop.MethodConsumeAdvice"/>  
+    <aop:config proxy-target-class="true">  
+        <aop:pointcut id="methodPointcut" expression="execution(* com.risenb.controller.*..*(..)) "/>  
+        <aop:advisor advice-ref="methodInterceptor" pointcut-ref="methodPointcut" />  
+    </aop:config>  
+</beans>  
